@@ -1,6 +1,6 @@
 import { Image, Text, View } from "react-native";
 
-export default function Index() {
+export default function Home() {
   return (
     <View className="flex w-full h-full flex-col bg-blue-500 items-center justify-center gap-4">
       <View className="bg-[#f4f4f4] w-36 h-36 flex items-center justify-center rounded-full">
