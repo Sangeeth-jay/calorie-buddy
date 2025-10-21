@@ -19,7 +19,7 @@ const NextBtn: React.FC<ButtonProps> = ({
       onPress={onPress}
       disabled={disabled}
       className={`px-16 py-3 rounded-full items-center justify-center 
-        ${disabled ? "bg-gray-400" : "border border-blue-500 text-gray-500 active:text-white active:bg-blue-600"} 
+        ${disabled ? "bg-gray-300" : "border border-blue-500 text-gray-500 active:text-white active:bg-blue-600"} 
         ${className || ""}`}
     >
       <Text className="text-xl">{title}</Text>

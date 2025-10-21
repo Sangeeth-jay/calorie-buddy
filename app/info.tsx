@@ -1,5 +1,5 @@
-import { SafeAreaView, View, Text } from "react-native";
-import React, { useState, useEffect } from "react";
+import { SafeAreaView, View, Text, Animated } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
 import NextBtn from "../components/NextBtn";
 
 import EatingImg from "../assets/info/Eating.svg";
@@ -15,7 +15,7 @@ const slides = [
   },
   {
     id: 2,
-    image: <FitnessImg width={320} height={320} />,
+    image: <FitnessImg width={360} height={360} />,
     title: "Gain Clear Insights Into Your Progress",
     desc: "See how your daily efforts stack up with detailed graphs and reports on calories, nutrition, and fitness.",
   },
@@ -28,47 +28,69 @@ const slides = [
 ];
 
 const Info = () => {
-  const [index, setIndex] = useState<number>(0);
+  const [index, setIndex] = useState(0);
+  const opacity = useRef(new Animated.Value(1)).current;
+
+  const fadeToNext = (nextIndex: number) => {
+    Animated.timing(opacity, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setIndex(nextIndex);
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    });
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % slides.length);
-    }, 2000);
+      fadeToNext((index + 1) % slides.length);
+    }, 2500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [index]);
 
-  const current = slides[index];
+  const current = slides[index] ?? slides[0];
 
   return (
     <SafeAreaView className="flex-1 justify-center items-center px-8 bg-white gap-8">
-      {/* Image + Text */}
-      <View className="items-center">
-        {current.image}
-        <Text className="text-2xl font-semibold text-center text-[#141E57] mt-4">
-          {current.title}
-        </Text>
-        <Text className="text-center text-[#C7C4C4] mt-2">{current.desc}</Text>
+      <View className=" h-2/3 flex flex-col justify-end">
+        {/* Animated Slide */}
+        <Animated.View style={{ opacity }} className="items-center">
+          {current.image}
+          <Text className="text-2xl font-semibold text-center text-[#141E57] mt-4">
+            {current.title}
+          </Text>
+          <Text className="text-center text-[#C7C4C4] mt-2">
+            {current.desc}
+          </Text>
+        </Animated.View>
       </View>
 
-      {/* Dots */}
-      <View className="flex flex-row items-center justify-center gap-2 mt-4">
-        {slides.map((_, i) => (
-          <View
-            key={i}
-            className={`${
-              i === index ? "w-4 bg-[#407BFF]" : "w-2 bg-[#C7C4C4]"
-            } h-2 rounded-full`}
-          />
-        ))}
-      </View>
+      <View className="1/3">
+        {/* Dots */}
+        <View className="flex flex-row items-center justify-center gap-2 mt-4">
+          {slides.map((_, i) => (
+            <View
+              key={i}
+              className={`${
+                i === index ? "w-4 bg-[#407BFF]" : "w-2 bg-[#C7C4C4]"
+              } h-2 rounded-full`}
+            />
+          ))}
+        </View>
 
-      {/* Button */}
-      <NextBtn
-        title={index === slides.length - 1 ? "Start" : "Skip"}
-        onPress={() => console.log("Button pressed!")}
-        className="mt-4"
-      />
+        {/* Button */}
+        <NextBtn
+          title={index === slides.length - 1 ? "Start" : "Skip"}
+          onPress={() => console.log("Button pressed!")}
+          className="mt-4"
+        />
+      </View>
     </SafeAreaView>
   );
 };
