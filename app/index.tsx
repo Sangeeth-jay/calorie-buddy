@@ -8,6 +8,7 @@ const index = () => {
       <Text>index</Text>
       <Link href={"/(main-screens)/home"}>Home</Link>
       <Link href={"./info"}>Info Screen</Link>
+      <Link href={"/(auth)/login"}>Login</Link>
     </View>
   )
 }
