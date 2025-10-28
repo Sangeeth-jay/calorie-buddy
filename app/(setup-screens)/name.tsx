@@ -1,5 +1,6 @@
 import { View, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
 import React from "react";
 import NextFillBtn from "../../components/NextFillBtn";
 import SetUpHeader from "../../components/SetUpHeader";
@@ -21,9 +22,7 @@ const Name = () => {
       <View className="w-full items-center">
         <NextFillBtn
           title="Next"
-          onPress={() => {
-            console.log("Name");
-          }}
+          onPress={() => router.push("/(setup-screens)/gender")}
         />
       </View>
     </SafeAreaView>

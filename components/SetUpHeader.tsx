@@ -23,7 +23,7 @@ const SetUpHeader: React.FC<Props> = ({ title, currentStep, totalSteps }) => {
         </TouchableOpacity>
         <ProgresBar currentStep={currentStep} totalSteps={totalSteps} />
         <View>
-          <Text className="font-semibold text-2xl text-gray-500 p-4">
+          <Text className="font-light text-2xl text-gray-500 p-4">
             {currentStep.toString()}/{totalSteps.toString()}
           </Text>
         </View>
