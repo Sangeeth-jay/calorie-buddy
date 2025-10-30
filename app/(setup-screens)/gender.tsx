@@ -6,6 +6,7 @@ import SetUpHeader from "../../components/SetUpHeader";
 import NextFillBtn from "../../components/NextFillBtn";
 
 import { GenderFemaleIcon, GenderMaleIcon } from "phosphor-react-native";
+import { router } from "expo-router";
 
 const gender = () => {
   return (
@@ -46,9 +47,7 @@ const gender = () => {
       </View>
       <NextFillBtn
         title="Next"
-        onPress={() => {
-          console.log("Name");
-        }}
+        onPress={() => router.push("/(setup-screens)/bdate")}
       />
     </SafeAreaView>
   );
