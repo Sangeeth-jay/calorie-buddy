@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 import SetUpHeader from "../../components/SetUpHeader";
 import NextFillBtn from "../../components/NextFillBtn";
+import { router } from "expo-router";
 
 const { height } = Dimensions.get("window");
 const ITEM_HEIGHT = 50;
@@ -165,6 +166,7 @@ const Bdate = () => {
         console.log(
           selectedDay,selectedMonth,selectedYear
         );
+        router.push("/(setup-screens)/height");
         
       }} />
     </SafeAreaView>
