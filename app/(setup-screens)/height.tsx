@@ -10,6 +10,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 import SetUpHeader from "../../components/SetUpHeader";
 import NextFillBtn from "../../components/NextFillBtn";
+import { router } from "expo-router";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const RULER_WIDTH = SCREEN_WIDTH * 3;
@@ -93,7 +94,7 @@ export default function Height() {
   };
 
   return (
-    <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between py-6">
+    <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between py-6 bg-white">
       <SetUpHeader
         title="What is your height?"
         currentStep={4}
@@ -196,6 +197,7 @@ export default function Height() {
         title="Next"
         onPress={() => {
           console.log(heightInCm.toFixed(1));
+          router.push("/(setup-screens)/weight");
         }}
       />
     </SafeAreaView>
