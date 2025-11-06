@@ -9,8 +9,12 @@ import { GenderFemaleIcon, GenderMaleIcon } from "phosphor-react-native";
 import { router } from "expo-router";
 
 const Gender = () => {
-
   const [selectedGender, setSelectedGender] = useState("");
+
+  const handleGenderSelect = (gender: string) => {
+    setSelectedGender(gender);
+    console.log(gender);
+  };
 
   return (
     <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between pb-6 bg-white">
@@ -19,8 +23,7 @@ const Gender = () => {
         <View className="w-full flex-row justify-center items-center gap-8">
           <Pressable
             onPress={() => {
-              setSelectedGender("Male");
-              console.log(selectedGender);
+              handleGenderSelect("Male");
             }}
             className="flex justify-center items-center gap-2"
           >
@@ -31,8 +34,7 @@ const Gender = () => {
           </Pressable>
           <Pressable
             onPress={() => {
-              setSelectedGender("Female");
-              console.log(selectedGender);
+              handleGenderSelect("Female");
             }}
             className="flex justify-center items-center gap-2"
           >
@@ -42,18 +44,20 @@ const Gender = () => {
             <Text className="text-4xl text-blue-600">Female</Text>
           </Pressable>
         </View>
-        <Pressable 
-         onPress={() => {
-              setSelectedGender("'_'");
-              console.log(selectedGender);
-            }}
-        className="px-4 py-2 border border-gray-400 rounded-full">
+        <Pressable
+          onPress={() => {
+            handleGenderSelect("LG TV+");
+          }}
+          className="px-4 py-2 border border-gray-400 rounded-full"
+        >
           <Text className="text-blue-500 text-xl">Prefer not to say</Text>
         </Pressable>
       </View>
       <NextFillBtn
         title="Next"
-        onPress={() => router.push("/(setup-screens)/bdate")}
+        onPress={() => {router.push("/(setup-screens)/bdate");
+          console.log(selectedGender);
+        }}
       />
     </SafeAreaView>
   );

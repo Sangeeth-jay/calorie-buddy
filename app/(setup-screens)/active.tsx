@@ -41,7 +41,7 @@ const Active = () => {
 
       <View className="w-full flex-col justify-center items-center gap-4">
         {activeLvl.map((item, index) => (
-          <Pressable key={item.id} onPress={() => setSelectedActive(item.id)} className={`w-10/12 my-2 bg-gray-200 rounded-2xl ${selectedActive === item.id ? "border border-blue-500" : ""}`}>
+          <Pressable key={item.id} onPress={() => setSelectedActive(item.id)} className={`w-10/12 my-2 bg-gray-100 rounded-2xl ${selectedActive === item.id ? "border border-blue-500" : ""}`}>
             <View className="w-full p-3 flex flex-col items-center justify-between">
               <Text className="text-xl  text-blue-950">{item.title}</Text>
               <Text className="text-md text-gray-400">{item.desc}</Text>
