@@ -90,7 +90,7 @@ const lbsToKg = (lbs: number) => {
   };
 
   return (
-    <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between py-6 bg-white">
+    <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between pb-6 bg-white">
       <SetUpHeader
         title="What is your current weight?"
         currentStep={5}

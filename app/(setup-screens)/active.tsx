@@ -36,7 +36,7 @@ const Active = () => {
   const [selectedActive, setSelectedActive] = useState(0);
 
   return (
-    <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between py-6 bg-white">
+    <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between pb-6 bg-white">
       <SetUpHeader title="How active are you?" currentStep={6} totalSteps={6} />
 
       <View className="w-full flex-col justify-center items-center gap-4">

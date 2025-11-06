@@ -132,7 +132,7 @@ const Bdate = () => {
   }, []);
 
   return (
-    <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between py-6 bg-white">
+    <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between pb-6 bg-white">
       <SetUpHeader title="When were you born?" currentStep={3} totalSteps={6} />
 
       {/* date picker */}

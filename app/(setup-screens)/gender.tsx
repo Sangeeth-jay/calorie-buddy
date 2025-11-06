@@ -13,7 +13,7 @@ const Gender = () => {
   const [selectedGender, setSelectedGender] = useState("");
 
   return (
-    <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between py-6 bg-white">
+    <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between pb-6 bg-white">
       <SetUpHeader title="Are you?" currentStep={2} totalSteps={6} />
       <View className="w-full flex justify-center items-center gap-8">
         <View className="w-full flex-row justify-center items-center gap-8">
