@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState, useRef, useEffect } from "react";
+import { useSetup } from "../context/SetupContext";
 
 import SetUpHeader from "../../components/SetUpHeader";
 import NextFillBtn from "../../components/NextFillBtn";
@@ -19,8 +20,9 @@ const MAX_WEIGHT = 200;
 const TICK_SPACING = 10;
 
 export default function Weight() {
-  const [units, setUnits] = useState("kg");
-  const [weightInKg, setWeightInKg] = useState(70);
+  const { setupData, updateSetupData } = useSetup();
+  const [units, setUnits] = useState(setupData.weightUnit);
+  const [weightInKg, setWeightInKg] = useState(setupData.weight);
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -87,6 +89,12 @@ const lbsToKg = (lbs: number) => {
 
   const handleUnitChange = (newUnit: React.SetStateAction<string>) => {
     setUnits(newUnit);
+  };
+
+    const handleNext = () => {
+    updateSetupData('weight', weightInKg);
+    updateSetupData('weightUnit', units);
+    router.push("/(setup-screens)/active");
   };
 
   return (
@@ -191,10 +199,7 @@ const lbsToKg = (lbs: number) => {
 
       <NextFillBtn
         title="Next"
-        onPress={() => {
-          console.log(weightInKg.toFixed(1));
-          router.push("/(setup-screens)/active");
-        }}
+        onPress={handleNext}
       />
     </SafeAreaView>
   );

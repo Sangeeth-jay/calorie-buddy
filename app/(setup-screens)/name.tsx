@@ -4,10 +4,16 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import NextFillBtn from "../../components/NextFillBtn";
 import SetUpHeader from "../../components/SetUpHeader";
+import { useSetup } from "../context/SetupContext";
 
 const Name = () => {
+const { setupData, updateSetupData } = useSetup();
+  const [name, setName] = useState(setupData.name);
 
-  const [name, setName] = useState("");
+  const handleNext = () => {
+    updateSetupData("name", name);
+    router.push("/(setup-screens)/gender");
+  }
 
   
 
@@ -29,9 +35,7 @@ const Name = () => {
       <View className="w-full items-center">
         <NextFillBtn
           title="Next"
-          onPress={() => {
-            console.log(name);
-            router.push("/(setup-screens)/gender");}}
+          onPress={handleNext}
         />
       </View>
     </SafeAreaView>

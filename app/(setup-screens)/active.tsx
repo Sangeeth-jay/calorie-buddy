@@ -1,6 +1,7 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState } from "react";
+import { useSetup } from "../context/SetupContext";
 import SetUpHeader from "../../components/SetUpHeader";
 import NextFillBtn from "../../components/NextFillBtn";
 
@@ -33,7 +34,22 @@ const activeLvl = [
 ];
 
 const Active = () => {
-  const [selectedActive, setSelectedActive] = useState(0);
+  const { setupData, updateSetupData, submitAllData } = useSetup();
+  const [selectedActive, setSelectedActive] = useState(setupData.activeLvl);
+  const [loading, setLoading] = useState(false);
+
+    const handleFinish = async () => {
+    setLoading(true);
+    try {
+      // Submit with the current activeLevel value
+      await submitAllData({ activeLvl: selectedActive });
+
+    } catch (error) {
+      alert('Failed to save your data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between pb-6 bg-white">
@@ -41,7 +57,11 @@ const Active = () => {
 
       <View className="w-full flex-col justify-center items-center gap-4">
         {activeLvl.map((item, index) => (
-          <Pressable key={item.id} onPress={() => setSelectedActive(item.id)} className={`w-10/12 my-2 bg-gray-100 rounded-2xl ${selectedActive === item.id ? "border border-blue-500" : ""}`}>
+          <Pressable
+            key={item.id}
+            onPress={() => setSelectedActive(item.id)}
+            className={`w-10/12 my-2 bg-gray-100 rounded-2xl ${selectedActive === item.id ? "border border-blue-500" : ""}`}
+          >
             <View className="w-full p-3 flex flex-col items-center justify-between">
               <Text className="text-xl  text-blue-950">{item.title}</Text>
               <Text className="text-md text-gray-400">{item.desc}</Text>
@@ -49,12 +69,17 @@ const Active = () => {
           </Pressable>
         ))}
       </View>
+      {/* Show loading spinner when submitting */}
+      {loading && (
+        <View className="absolute inset-0 bg-black/20 items-center justify-center">
+          <ActivityIndicator size="large" color="#407BFF" />
+          <Text className="mt-4 text-white">Saving your data...</Text>
+        </View>
+      )}
 
       <NextFillBtn
-        title="Continue"
-        onPress={() => {
-          alert(selectedActive);
-        }}
+        title={loading ? "Saving..." : "Finish"}
+        onPress={handleFinish}
       />
     </SafeAreaView>
   );

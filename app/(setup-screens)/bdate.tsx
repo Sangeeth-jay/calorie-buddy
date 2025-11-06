@@ -1,6 +1,7 @@
 import { View, Text, ScrollView, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState, useRef, useEffect } from "react";
+import { useSetup } from "../context/SetupContext";
 
 import SetUpHeader from "../../components/SetUpHeader";
 import NextFillBtn from "../../components/NextFillBtn";
@@ -11,9 +12,11 @@ const ITEM_HEIGHT = 50;
 const VISIBLE_ITEMS = 5;
 
 const Bdate = () => {
-  const [selectedDay, setSelectedDay] = useState(25);
-  const [selectedMonth, setSelectedMonth] = useState(7);
-  const [selectedYear, setSelectedYear] = useState(1995);
+  const { setupData, updateSetupData } = useSetup();
+
+  const [selectedDay, setSelectedDay] = useState(setupData.bdate.day);
+  const [selectedMonth, setSelectedMonth] = useState(setupData.bdate.month);
+  const [selectedYear, setSelectedYear] = useState(setupData.bdate.year);
 
   const dayScrollRef = useRef<ScrollView | null>(null);
   const monthScrollRef = useRef<ScrollView | null>(null);
@@ -131,6 +134,15 @@ const Bdate = () => {
     }, 100);
   }, []);
 
+    const handleNext = () => {
+    updateSetupData('bdate', {
+      day: selectedDay,
+      month: selectedMonth,
+      year: selectedYear,
+    });
+    router.push("/(setup-screens)/height");
+  };
+
   return (
     <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between pb-6 bg-white">
       <SetUpHeader title="When were you born?" currentStep={3} totalSteps={6} />
@@ -162,13 +174,7 @@ const Bdate = () => {
       </View>
       {/* date picker */}
 
-      <NextFillBtn title="Next" onPress={() => {
-        console.log(
-          selectedDay,selectedMonth,selectedYear
-        );
-        router.push("/(setup-screens)/height");
-        
-      }} />
+      <NextFillBtn title="Next" onPress={handleNext} />
     </SafeAreaView>
   );
 };

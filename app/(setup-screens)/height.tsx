@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState, useRef, useEffect } from "react";
+import { useSetup } from "../context/SetupContext";
 
 import SetUpHeader from "../../components/SetUpHeader";
 import NextFillBtn from "../../components/NextFillBtn";
@@ -19,8 +20,10 @@ const MAX_HEIGHT = 220;
 const TICK_SPACING = 10;
 
 export default function Height() {
-  const [units, setUnits] = useState("cm");
-  const [heightInCm, setHeightInCm] = useState(175);
+  const {setupData, updateSetupData} = useSetup();
+
+  const [units, setUnits] = useState(setupData.heightUnit);
+  const [heightInCm, setHeightInCm] = useState(setupData.height);
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -91,6 +94,12 @@ export default function Height() {
 
   const handleUnitChange = (newUnit: React.SetStateAction<string>) => {
     setUnits(newUnit);
+  };
+
+    const handleNext = () => {
+    updateSetupData('height', heightInCm);
+    updateSetupData('heightUnit', units);
+    router.push("/(setup-screens)/weight");
   };
 
   return (
@@ -195,10 +204,7 @@ export default function Height() {
 
       <NextFillBtn
         title="Next"
-        onPress={() => {
-          console.log(heightInCm.toFixed(1));
-          router.push("/(setup-screens)/weight");
-        }}
+        onPress={handleNext}
       />
     </SafeAreaView>
   );

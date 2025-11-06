@@ -1,6 +1,7 @@
 import { View, Pressable, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState } from "react";
+import { useSetup } from "../context/SetupContext";
 
 import SetUpHeader from "../../components/SetUpHeader";
 import NextFillBtn from "../../components/NextFillBtn";
@@ -9,12 +10,18 @@ import { GenderFemaleIcon, GenderMaleIcon } from "phosphor-react-native";
 import { router } from "expo-router";
 
 const Gender = () => {
-  const [selectedGender, setSelectedGender] = useState("");
+  const { setupData, updateSetupData } = useSetup();
+  const [selectedGender, setSelectedGender] = useState(setupData.gender);
 
   const handleGenderSelect = (gender: string) => {
     setSelectedGender(gender);
+    updateSetupData("gender", gender);
     console.log(gender);
   };
+
+  const handleNext = () => {
+    router.push("/(setup-screens)/bdate");
+  }
 
   return (
     <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between pb-6 bg-white">
@@ -55,9 +62,7 @@ const Gender = () => {
       </View>
       <NextFillBtn
         title="Next"
-        onPress={() => {router.push("/(setup-screens)/bdate");
-          console.log(selectedGender);
-        }}
+        onPress={handleNext}
       />
     </SafeAreaView>
   );
