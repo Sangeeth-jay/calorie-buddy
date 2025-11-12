@@ -10,6 +10,7 @@ const index = () => {
       <Link href={"./info"}>Info Screen</Link>
       <Link href={"/(auth)/login"}>Login</Link>
       <Link href={"/(setup-screens)/name"}>Setup</Link>
+      <Link href={"/(after-setup-screens)/health"}>After Main Screens</Link>
     </View>
   )
 }
