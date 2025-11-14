@@ -2,6 +2,7 @@ import { View, Text, ScrollView, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NextFillBtn from '../../components/NextFillBtn'
 import React from "react";
+import { router } from "expo-router";
 
 interface MetricCardProps {
   label: string;
@@ -154,10 +155,7 @@ const Health = () => {
         <View className="px-6 py-6">
           <NextFillBtn 
             title="Continue" 
-            onPress={() => {
-              // TODO: Navigate to next screen
-              console.log("Navigating to goal screen");
-            }} 
+            onPress={() => router.push("/(after-setup-screens)/goal")}
           />
         </View>
       </ScrollView>
