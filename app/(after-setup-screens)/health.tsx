@@ -23,11 +23,8 @@ const Health = () => {
   };
 
   return (
-    <SafeAreaView className="bg-white flex-1">
-      <ScrollView 
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
-      >
+    <SafeAreaView className="bg-white flex-1 justify-between">
+
         {/* Header */}
         <View className="px-6 py-4 border-b border-gray-200">
           <Text className="text-2xl font-bold text-gray-800 text-center">
@@ -158,7 +155,6 @@ const Health = () => {
             onPress={() => router.push("/(after-setup-screens)/goal")}
           />
         </View>
-      </ScrollView>
     </SafeAreaView>
   );
 };
