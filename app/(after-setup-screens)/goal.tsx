@@ -2,6 +2,7 @@ import { View, Text, Pressable } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NextFillBtn from "../../components/NextFillBtn";
+import { router } from "expo-router";
 
 const goals = [
   { id: "lose-weight", emoji: "🔥", label: "Lose weight" },
@@ -45,6 +46,7 @@ const Goal = () => {
             title="Continue"
             onPress={() => {
               console.log("Selected goal:", selectedGoal);
+              router.push("/(after-setup-screens)/calorie-plan");
             }}
             disabled={!selectedGoal}
           />
