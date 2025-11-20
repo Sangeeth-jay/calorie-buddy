@@ -33,9 +33,9 @@ const Profile = () => {
         className="w-full flex-1"
         showsVerticalScrollIndicator={false}
       >
-        <View className="w-full px-6 py-4">
+        <View className="w-full px-6 pt-6 ">
           {/* User Profile */}
-          <View className="w-full bg-white rounded-2xl flex-row items-center gap-4 p-4 mb-6 shadow-sm">
+          <View className="w-full bg-white rounded-2xl flex-row items-center gap-4 p-4 mb-6 ">
             <View className="w-20 h-20 rounded-full bg-purple-200 items-center justify-center border-4 border-purple-600">
               <Image
                 resizeMode="contain"
@@ -55,7 +55,7 @@ const Profile = () => {
           <Text className="text-base font-semibold text-slate-600 mb-2">
             Nutrition & Goals
           </Text>
-          <View className="w-full bg-white rounded-2xl px-4 py-6 mb-6 shadow-sm">
+          <View className="w-full bg-white rounded-2xl px-4 py-6 mb-6 ">
             <View className="flex-row items-center justify-between border-b border-slate-200 pb-4 mb-4">
               <View className="flex-row items-center gap-2">
                 <Image
@@ -146,7 +146,7 @@ const Profile = () => {
           <Text className="text-base font-semibold text-slate-600 mb-2">
             Health Profile
           </Text>
-          <Pressable className="w-full bg-white rounded-2xl px-4 py-6 mb-6 shadow-sm">
+          <Pressable className="w-full bg-white rounded-2xl px-4 py-6 mb-6">
             <View className="flex-row items-center justify-between w-full">
               <View className="flex-row gap-3 items-center flex-1">
                 <Image
@@ -170,7 +170,7 @@ const Profile = () => {
           <Text className="text-base font-semibold text-slate-600 mb-2">
             Notifications
           </Text>
-          <View className="w-full bg-white rounded-2xl px-4 py-6 mb-6 shadow-sm">
+          <View className="w-full bg-white rounded-2xl px-4 py-6 mb-6 ">
             <View className="flex-row items-center justify-between w-full">
               <View className="flex-row gap-3 items-center flex-1">
                 <Image
@@ -194,7 +194,7 @@ const Profile = () => {
           </Text>
           <Pressable
             onPress={openBuyMeACoffee}
-            className="w-full bg-white rounded-2xl px-4 py-6 mb-6 shadow-sm"
+            className="w-full bg-white rounded-2xl px-4 py-6 mb-6 "
           >
             <View className="flex-row items-center justify-between w-full">
               <View className="flex-row gap-3 items-center flex-1">
