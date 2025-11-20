@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image } from "react-native";
+import { View, Text, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import NextFillBtn from '../../components/NextFillBtn'
 import React from "react";

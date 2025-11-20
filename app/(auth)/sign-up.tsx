@@ -7,9 +7,9 @@ import CustomInput from "../../components/CustomInput";
 import PasswordInput from "../../components/PasswordInput";
 import AuthBtn from "../../components/AuthBtn";
 
-import GoogleIcon from "../../assets/icons/google.svg";
-import AppleIcon from "../../assets/icons/apple.svg";
-import FacebookIcon from "../../assets/icons/facebook.svg";
+import GoogleIcon from "../../assets/icons/socialMedia/google.svg";
+import AppleIcon from "../../assets/icons/socialMedia/apple.svg";
+import FacebookIcon from "../../assets/icons/socialMedia/facebook.svg";
 
 const Signup = () => {
   // const [email, setEmail] = useState('');

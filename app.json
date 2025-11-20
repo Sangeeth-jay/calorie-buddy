@@ -4,20 +4,20 @@
     "slug": "c-buddy",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icons/ios-light.png",
+    "icon": "./assets/icons/appIcons/ios-light.png",
     "scheme": "cbuddy",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "icon": "./assets/icons/ios-light.png"
+      "icon": "./assets/icons/appIcons/ios-light.png"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/icons/adaptive-icon.png",
-        "backgroundImage": "./assets/icons/adaptive-icon.png",
-        "monochromeImage": "./assets/icons/adaptive-icon.png"
+        "backgroundColor": "#ffffff",
+        "foregroundImage": "./assets/icons/appIcons/adaptive-icon.png",
+        "backgroundImage": "./assets/icons/appIcons/adaptive-icon.png",
+        "monochromeImage": "./assets/icons/appIcons/adaptive-icon.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -32,7 +32,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/icons/splash-icon-dark.png",
+          "image": "./assets/icons/appIcons/splash-icon-dark.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
