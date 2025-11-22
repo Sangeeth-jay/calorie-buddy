@@ -25,7 +25,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/cbuddy-icon.png"
+      "favicon": "./assets/icons/appIcons/ios-light.png"
     },
     "plugins": [
       "expo-router",
