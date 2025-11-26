@@ -19,6 +19,7 @@ const WeightCard: React.FC<WeightCardProps> = ({
   actualData,
   targetData,
   chartWidth,
+  onAddPress,
   height = 80,
 }) => {
   // Calculate dynamic weight range
@@ -36,12 +37,6 @@ const WeightCard: React.FC<WeightCardProps> = ({
 
   // Calculate dynamic spacing
   const spacing = (chartWidth - 40) / (actualData.length - 1);
-  const _onAddPress = onAddPress;
-  function onAddPress(event?: any): void {
-    // Forward the press to the prop handler if provided.
-    // Keep this wrapper so the JSX can reference `onAddPress` while still calling the prop.
-    _onAddPress?.();
-  }
 
   return (
     <View className="w-full">

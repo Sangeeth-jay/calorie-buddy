@@ -3,10 +3,13 @@ import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { CaretRightIcon, CaretLeftIcon } from "phosphor-react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import HydrationCard from "../../components/progress/HydrationCard";
 import WeightCard from "../../components/progress/WeightCard";
 import MacroIntakesCard from "../../components/progress/MacroIntakesCard";
+import AddWeightModal from "../../components/modals/AddWeightModal";
 
 const Progress = () => {
   // Get screen width
@@ -30,6 +33,16 @@ const Progress = () => {
       prev === periods.length - 1 ? 0 : prev + 1
     );
   };
+
+  //weight modal state
+  const [isWeightModalOpen, setIsWeightModalOpen] = useState(false);
+
+  // Handle saving weight entry
+  const handleSaveWeight = (data: { weight: number; date: Date }) => {
+    console.log("Weight saved:", data);
+    // TODO: Save to context/backend later
+  };
+
   // Macro Intakes data
   const macroData = [
     { day: "Mon", carbs: 250, protein: 100, fat: 60 },
@@ -68,26 +81,26 @@ const Progress = () => {
   ];
 
   return (
-    <>
-      <StatusBar style="dark" />
-      <SafeAreaView className="flex-1 w-full">
-        <View className="flex-1 justify-center items-center w-full">
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <SafeAreaView className="bg-gray-50">
           {/* Header */}
           <View className="px-6 py-4 bg-white border-b border-gray-200 w-full flex-row items-center justify-center gap-4">
             <Pressable onPress={goToPreviousPeriod}>
               <CaretLeftIcon size={24} color="#9ca3af" />
             </Pressable>
-            <Text className="text-2xl font-medium text-slate-600">
+            <Text className="text-2xl w-24 text-center font-medium text-slate-600">
               {selectedPeriod}
             </Text>
             <Pressable onPress={goToNextPeriod}>
-              <CaretRightIcon size={24} color="#9ca3af" />
+              <CaretRightIcon size={20} color="#9ca3af" />
             </Pressable>
           </View>
 
           {/* Content */}
-          <ScrollView className="flex-1 w-full">
-            <View className="flex-1 items-center justify-around gap-8 w-full px-6 pt-10">
+
+          <ScrollView>
+            <View className="flex-1 gap-4 px-6 pt-10">
               {/* Macro Intakes Section */}
               <MacroIntakesCard data={macroData} chartWidth={chartWidth} />
               {/* Hydration Section */}
@@ -98,13 +111,18 @@ const Progress = () => {
                 actualData={actualWeightData}
                 targetData={targetWeightData}
                 chartWidth={chartWidth}
-                onAddPress={() => console.log("Add new weight entry")}
+                onAddPress={() => setIsWeightModalOpen(true)}
               />
             </View>
           </ScrollView>
-        </View>
-      </SafeAreaView>
-    </>
+        </SafeAreaView>
+        <AddWeightModal
+          isOpen={isWeightModalOpen}
+          onClose={() => setIsWeightModalOpen(false)}
+          onSave={handleSaveWeight}
+        />
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 };
 

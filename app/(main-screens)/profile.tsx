@@ -28,9 +28,9 @@ const Profile = () => {
   };
 
   return (
-    <SafeAreaView className="w-full flex-1 bg-gray-50">
+    <SafeAreaView className="w-full bg-gray-50">
       <ScrollView
-        className="w-full flex-1"
+        className="w-full "
         showsVerticalScrollIndicator={false}
       >
         <View className="w-full px-6 pt-6 ">
@@ -43,7 +43,7 @@ const Profile = () => {
                 className="w-16 h-20 rounded-full"
               />
             </View>
-            <View className="flex-1">
+            <View className="">
               <Text className="text-2xl font-semibold text-gray-800">
                 Hashen Sangeeth
               </Text>
@@ -148,12 +148,12 @@ const Profile = () => {
           </Text>
           <Pressable className="w-full bg-white rounded-2xl px-4 py-6 mb-6">
             <View className="flex-row items-center justify-between w-full">
-              <View className="flex-row gap-3 items-center flex-1">
+              <View className="flex-row gap-3 items-center ">
                 <Image
                   source={require("../../assets/icons/medal3d.png")}
                   className="w-12 h-12"
                 />
-                <View className="flex-1">
+                <View className="">
                   <Text className="text-lg font-semibold text-gray-800">
                     69 kg (current weight)
                   </Text>
@@ -172,7 +172,7 @@ const Profile = () => {
           </Text>
           <View className="w-full bg-white rounded-2xl px-4 py-6 mb-6 ">
             <View className="flex-row items-center justify-between w-full">
-              <View className="flex-row gap-3 items-center flex-1">
+              <View className="flex-row gap-3 items-center ">
                 <Image
                   source={require("../../assets/icons/bell3d.png")}
                   className="w-10 h-10"
@@ -197,7 +197,7 @@ const Profile = () => {
             className="w-full bg-white rounded-2xl px-4 py-6 mb-6 "
           >
             <View className="flex-row items-center justify-between w-full">
-              <View className="flex-row gap-3 items-center flex-1">
+              <View className="flex-row gap-3 items-center ">
                 <Image
                   source={require("../../assets/icons/buy-me-a-coffee.png")}
                   className="w-10 h-10"

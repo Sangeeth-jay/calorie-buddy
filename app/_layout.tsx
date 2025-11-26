@@ -2,6 +2,7 @@ import "../global.css";
 import { Stack } from "expo-router";
 import { SetupProvider } from "./context/SetupContext";
 
+
 export default function RootLayout() {
   return (
     <SetupProvider>
