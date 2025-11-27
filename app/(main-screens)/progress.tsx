@@ -100,7 +100,7 @@ const Progress = () => {
           {/* Content */}
 
           <ScrollView>
-            <View className="flex-1 gap-4 px-6 pt-10">
+            <View className="flex-1 gap-4 px-6 py-10">
               {/* Macro Intakes Section */}
               <MacroIntakesCard data={macroData} chartWidth={chartWidth} />
               {/* Hydration Section */}
