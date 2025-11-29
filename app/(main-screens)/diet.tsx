@@ -1,17 +1,24 @@
 import { View, Text, ScrollView } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import BreakFast from "@/components/diet/BreakFast";
 import Lunch from "@/components/diet/Lunch";
 import Dinner from "@/components/diet/Dinner";
+import Calendar from "@/components/Calendar";
 
 const Diet = () => {
+  const [selectedDate, setSelectedDate] = useState(13);
+
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 py-4">
           {/* Weekly Calendar - We'll build this next */}
+          <Calendar
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
+          />
           <View className="mb-4">
             <Text className="text-sm text-gray-500">
               Week calendar goes here
