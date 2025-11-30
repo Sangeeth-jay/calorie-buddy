@@ -1,8 +1,12 @@
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import React from "react";
 import Toast from "../../assets/images/toast-93.svg";
 
-const BreakFast = () => {
+interface BreakFastProps {
+  onAddItem: () => void; 
+}
+
+const BreakFast: React.FC<BreakFastProps> = ({ onAddItem }) => {
   return (
     <View className="w-full bg-white rounded-xl px-4 py-6 ">
       <View className="w-full flex-row items-center justify-between">
@@ -15,9 +19,13 @@ const BreakFast = () => {
           </View>
           <View className="w-full gap-1">
             <View className="w-full border-b border-gray-300 items-center">
-                <Text className="text-gray-300 font-light italic">No item log.</Text>
+              <Text className="text-gray-300 font-light italic">
+                No item log.
+              </Text>
             </View>
-            <Text className="text-blue-600 font-medium">Add Item +</Text>
+            <Pressable onPress={onAddItem}>
+              <Text className="text-blue-600 font-medium">Add Item +</Text>
+            </Pressable>
           </View>
         </View>
         <View>
