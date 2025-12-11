@@ -30,7 +30,7 @@ const Diet = () => {
       <BottomSheetModalProvider>
         <SafeAreaView className="flex-1 bg-gray-50">
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-            <View className="px-6 py-4">
+            <View className="px-6 pt-6">
               <Calendar
                 selectedDate={selectedDate}
                 onSelectDate={setSelectedDate}
