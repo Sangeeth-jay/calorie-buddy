@@ -1,21 +1,19 @@
-import { View, TextInput } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import React, { useState } from "react";
+import { TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import NextFillBtn from "../../components/NextFillBtn";
 import SetUpHeader from "../../components/SetUpHeader";
-import { useSetup } from "../context/SetupContext";
+import { useSetup } from "../../src/context/SetupContext";
 
 const Name = () => {
-const { setupData, updateSetupData } = useSetup();
+  const { setupData, updateSetupData } = useSetup();
   const [name, setName] = useState(setupData.name);
 
   const handleNext = () => {
     updateSetupData("name", name);
     router.push("/(setup-screens)/gender");
-  }
-
-  
+  };
 
   return (
     <SafeAreaView className="w-full h-screen-safe flex-1 items-center justify-between pb-6 bg-white">
@@ -33,10 +31,7 @@ const { setupData, updateSetupData } = useSetup();
         />
       </View>
       <View className="w-full items-center">
-        <NextFillBtn
-          title="Next"
-          onPress={handleNext}
-        />
+        <NextFillBtn title="Next" onPress={handleNext} />
       </View>
     </SafeAreaView>
   );

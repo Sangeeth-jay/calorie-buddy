@@ -1,17 +1,17 @@
+import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  Dimensions,
-  ScrollView,
-  TouchableOpacity,
+    Dimensions,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useState, useRef, useEffect } from "react";
-import { useSetup } from "../context/SetupContext";
+import { useSetup } from "../../src/context/SetupContext";
 
-import SetUpHeader from "../../components/SetUpHeader";
-import NextFillBtn from "../../components/NextFillBtn";
 import { router } from "expo-router";
+import NextFillBtn from "../../components/NextFillBtn";
+import SetUpHeader from "../../components/SetUpHeader";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const RULER_WIDTH = SCREEN_WIDTH * 3;
@@ -20,7 +20,7 @@ const MAX_HEIGHT = 220;
 const TICK_SPACING = 10;
 
 export default function Height() {
-  const {setupData, updateSetupData} = useSetup();
+  const { setupData, updateSetupData } = useSetup();
 
   const [units, setUnits] = useState(setupData.heightUnit);
   const [heightInCm, setHeightInCm] = useState(setupData.height);
@@ -44,7 +44,7 @@ export default function Height() {
     const offsetX = event.nativeEvent.contentOffset.x;
     const centerPosition = offsetX + SCREEN_WIDTH / 2;
     const heightIndex = Math.round(
-      (centerPosition - SCREEN_WIDTH / 2) / TICK_SPACING
+      (centerPosition - SCREEN_WIDTH / 2) / TICK_SPACING,
     );
 
     const calculatedHeight = MIN_HEIGHT + heightIndex;
@@ -96,9 +96,9 @@ export default function Height() {
     setUnits(newUnit);
   };
 
-    const handleNext = () => {
-    updateSetupData('height', heightInCm);
-    updateSetupData('heightUnit', units);
+  const handleNext = () => {
+    updateSetupData("height", heightInCm);
+    updateSetupData("heightUnit", units);
     router.push("/(setup-screens)/weight");
   };
 
@@ -202,10 +202,7 @@ export default function Height() {
 
       {/* height */}
 
-      <NextFillBtn
-        title="Next"
-        onPress={handleNext}
-      />
+      <NextFillBtn title="Next" onPress={handleNext} />
     </SafeAreaView>
   );
 }

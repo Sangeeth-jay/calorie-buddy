@@ -1,11 +1,11 @@
-import { View, Text, ScrollView, Dimensions } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Dimensions, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useState, useRef, useEffect } from "react";
-import { useSetup } from "../context/SetupContext";
+import { useSetup } from "../../src/context/SetupContext";
 
-import SetUpHeader from "../../components/SetUpHeader";
-import NextFillBtn from "../../components/NextFillBtn";
 import { router } from "expo-router";
+import NextFillBtn from "../../components/NextFillBtn";
+import SetUpHeader from "../../components/SetUpHeader";
 
 const { height } = Dimensions.get("window");
 const ITEM_HEIGHT = 50;
@@ -26,12 +26,15 @@ const Bdate = () => {
   const days = Array.from({ length: 31 }, (_, i) => i + 1); // [1, 2, 3, ..., 31]
   const months = Array.from({ length: 12 }, (_, i) => i + 1); // [1, 2, 3, ..., 12]
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 100 }, (_, i) => currentYear - i).reverse(); // [2024, 2023, ..., 1925]
+  const years = Array.from(
+    { length: 100 },
+    (_, i) => currentYear - i,
+  ).reverse(); // [2024, 2023, ..., 1925]
 
   const handleScroll = (
     event: { nativeEvent: { contentOffset: { y: any } } },
     data: any[],
-    setSelected: (arg0: any) => void
+    setSelected: (arg0: any) => void,
   ) => {
     const offsetY = event.nativeEvent.contentOffset.y;
     const index = Math.round(offsetY / ITEM_HEIGHT);
@@ -47,7 +50,7 @@ const Bdate = () => {
     selected: any,
     onSelect: (arg0: any) => void,
     scrollRef: React.Ref<ScrollView> | undefined,
-    label: string
+    label: string,
   ) => {
     return (
       <View className="flex-1 items-center">
@@ -134,8 +137,8 @@ const Bdate = () => {
     }, 100);
   }, []);
 
-    const handleNext = () => {
-    updateSetupData('bdate', {
+  const handleNext = () => {
+    updateSetupData("bdate", {
       day: selectedDay,
       month: selectedMonth,
       year: selectedYear,
@@ -154,23 +157,22 @@ const Bdate = () => {
           selectedDay,
           setSelectedDay,
           dayScrollRef,
-          "Day"
+          "Day",
         )}
         {renderPickerColumn(
           months,
           selectedMonth,
           setSelectedMonth,
           monthScrollRef,
-          "Month"
+          "Month",
         )}
         {renderPickerColumn(
           years,
           selectedYear,
           setSelectedYear,
           yearScrollRef,
-          "Year"
+          "Year",
         )}
-        
       </View>
       {/* date picker */}
 

@@ -1,7 +1,9 @@
-import { SafeAreaView, View, Text, Animated } from "react-native";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import NextBtn from "../components/NextBtn";
 
+import { useRouter } from "expo-router";
 import EatingImg from "../assets/info/Eating.svg";
 import FitnessImg from "../assets/info/Fitness.svg";
 import WeightsImg from "../assets/info/Weights-pana.svg";
@@ -31,30 +33,36 @@ const Info = () => {
   const [index, setIndex] = useState(0);
   const opacity = useRef(new Animated.Value(1)).current;
 
-  const fadeToNext = (nextIndex: number) => {
-    Animated.timing(opacity, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      setIndex(nextIndex);
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    });
-  };
+  const router = useRouter();
 
   useEffect(() => {
+    const fadeToNext = (nextIndex: number) => {
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        setIndex(nextIndex);
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      });
+    };
+
     const interval = setInterval(() => {
       fadeToNext((index + 1) % slides.length);
     }, 2500);
 
     return () => clearInterval(interval);
-  }, [index]);
+  }, [index, opacity]);
 
   const current = slides[index] ?? slides[0];
+
+  function handleSkip() {
+    router.replace("/(auth)/login");
+  }
 
   return (
     <SafeAreaView className="flex-1 justify-center items-center px-8 bg-white gap-8">
@@ -87,7 +95,7 @@ const Info = () => {
         {/* Button */}
         <NextBtn
           title={index === slides.length - 1 ? "Start" : "Skip"}
-          onPress={() => console.log("Button pressed!")}
+          onPress={handleSkip}
           className="mt-4"
         />
       </View>

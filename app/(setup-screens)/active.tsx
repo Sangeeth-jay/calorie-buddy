@@ -1,9 +1,9 @@
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState } from "react";
-import { useSetup } from "../context/SetupContext";
-import SetUpHeader from "../../components/SetUpHeader";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import NextFillBtn from "../../components/NextFillBtn";
+import SetUpHeader from "../../components/SetUpHeader";
+import { useSetup } from "../../src/context/SetupContext";
 
 const activeLvl = [
   {
@@ -38,14 +38,13 @@ const Active = () => {
   const [selectedActive, setSelectedActive] = useState(setupData.activeLvl);
   const [loading, setLoading] = useState(false);
 
-    const handleFinish = async () => {
+  const handleFinish = async () => {
     setLoading(true);
     try {
       // Submit with the current activeLevel value
       await submitAllData({ activeLvl: selectedActive });
-
     } catch (error) {
-      alert('Failed to save your data. Please try again.');
+      alert("Failed to save your data. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -8,7 +8,7 @@ interface CaloriesCardProps {
 const CaloriesCard: React.FC<CaloriesCardProps> = ({ selectedDate }) => {
   //replace below with context api data
   const nutritionData = {
-    calories: { consumed: 2500, goal: 2217 },
+    calories: { consumed: 1098, goal: 2217 },
     protein: { consumed: 57, goal: 122 },
     carbs: { consumed: 207, goal: 631 },
     fat: { consumed: 4, goal: 18 },
@@ -16,7 +16,7 @@ const CaloriesCard: React.FC<CaloriesCardProps> = ({ selectedDate }) => {
 
   return (
     <View className="bg-white rounded-2xl py-4 px-3 w-full">
-      <Text className="text-xl font-bold text-gray-800 mb-4">Calories</Text>
+      <Text className="text-xl font-bold text-blue-950 mb-4">Calories</Text>
 
       {/* Gauge will go here */}
       <View className="items-center mb-2">

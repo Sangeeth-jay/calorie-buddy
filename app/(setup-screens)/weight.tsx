@@ -1,17 +1,17 @@
+import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  Dimensions,
-  ScrollView,
-  TouchableOpacity,
+    Dimensions,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useState, useRef, useEffect } from "react";
-import { useSetup } from "../context/SetupContext";
+import { useSetup } from "../../src/context/SetupContext";
 
-import SetUpHeader from "../../components/SetUpHeader";
-import NextFillBtn from "../../components/NextFillBtn";
 import { router } from "expo-router";
+import NextFillBtn from "../../components/NextFillBtn";
+import SetUpHeader from "../../components/SetUpHeader";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const RULER_WIDTH = SCREEN_WIDTH * 3;
@@ -43,7 +43,7 @@ export default function Weight() {
     const offsetX = event.nativeEvent.contentOffset.x;
     const centerPosition = offsetX + SCREEN_WIDTH / 2;
     const weightIndex = Math.round(
-      (centerPosition - SCREEN_WIDTH / 2) / TICK_SPACING
+      (centerPosition - SCREEN_WIDTH / 2) / TICK_SPACING,
     );
 
     const calculatedWeight = MIN_WEIGHT + weightIndex;
@@ -54,13 +54,13 @@ export default function Weight() {
   };
 
   //kg and lbs conversion
-const kgToLbs = (kg: number) => {
-  return (kg * 2.205).toFixed(1);
-};
+  const kgToLbs = (kg: number) => {
+    return (kg * 2.205).toFixed(1);
+  };
 
-const lbsToKg = (lbs: number) => {
-  return (lbs / 2.205).toFixed(1);
-};
+  const lbsToKg = (lbs: number) => {
+    return (lbs / 2.205).toFixed(1);
+  };
 
   //Display height
   const getDesiplayWeight = () => {
@@ -91,9 +91,9 @@ const lbsToKg = (lbs: number) => {
     setUnits(newUnit);
   };
 
-    const handleNext = () => {
-    updateSetupData('weight', weightInKg);
-    updateSetupData('weightUnit', units);
+  const handleNext = () => {
+    updateSetupData("weight", weightInKg);
+    updateSetupData("weightUnit", units);
     router.push("/(setup-screens)/active");
   };
 
@@ -197,10 +197,7 @@ const lbsToKg = (lbs: number) => {
 
       {/* height */}
 
-      <NextFillBtn
-        title="Next"
-        onPress={handleNext}
-      />
+      <NextFillBtn title="Next" onPress={handleNext} />
     </SafeAreaView>
   );
 }

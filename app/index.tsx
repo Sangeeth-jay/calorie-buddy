@@ -1,18 +1,39 @@
-import { View, Text } from 'react-native'
-import { Link } from 'expo-router'
-import React from 'react'
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
+import { supabase } from "@/src/lib/supabase"; 
+import { useSession } from "@/src/hooks/useSession"; 
 
-const index = () => {
-  return (
-    <View className='w-full h-screen-safe flex-1 flex-col justify-center items-center gap-6'>
-      <Text>index</Text>
-      <Link href={"/(main-screens)/home"}>Home</Link>
-      <Link href={"./info"}>Info Screen</Link>
-      <Link href={"/(auth)/login"}>Login</Link>
-      <Link href={"/(setup-screens)/name"}>Setup</Link>
-      <Link href={"/(after-setup-screens)/health"}>After Main Screens</Link>
-    </View>
-  )
+export default function Index() {
+  const { session, loading } = useSession();
+
+  const router = useRouter();
+
+  useEffect(() => {
+
+    if(loading) return;
+
+    if(!session?.user) {
+      router.replace("/info");
+      return;
+    }
+
+    const checkProfile = async () => {
+      const {data, error} = await supabase.from("profiles").select("has_completed_setup").eq("id", session.user.id).single();
+
+      const completed = !error && data?.has_completed_setup === true;
+
+      if(!completed) {
+        router.replace("/(setup-screens)/name");
+      } else {
+        router.replace("/(main-screens)/home");
+      }
+    };
+
+
+    checkProfile();
+
+  }, [loading, router, session?.user]);
+
+  return null;
+
 }
-
-export default index
