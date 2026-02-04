@@ -79,7 +79,7 @@ const Info = () => {
         </Animated.View>
       </View>
 
-      <View className="1/3">
+      <View className="1/3 gap-6">
         {/* Dots */}
         <View className="flex flex-row items-center justify-center gap-2 mt-4">
           {slides.map((_, i) => (

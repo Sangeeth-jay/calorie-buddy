@@ -18,6 +18,8 @@ const Signup = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [checkbox, setCheckbox] = useState(false);
+
 
   return (
     <SafeAreaView className="w-full h-screen-safe py-[62px] px-[20px] bg-white flex-1 justify-around items-center">
@@ -44,7 +46,7 @@ const Signup = () => {
           <PasswordInput label="Password" placeholder="Password" onChangeText={setPassword} value={password}/>
         </View>
         <View className="flex-row items-center font-thin gap-2 mb-8">
-          <Checkbox className="" />
+          <Checkbox className=""  onValueChange={setCheckbox} value={checkbox}/>
           <Text className="text-sm">
             I agree to C&apos;Buddy{" "}
             <Text className="text-blue-500">Terms & Conditions.</Text>
@@ -78,9 +80,9 @@ const Signup = () => {
         </View>
       </View>
 
-      {/* login btn */}
+      {/* sign btn */}
       <View className="w-full px-[32px]">
-        <AuthBtn title="Sign Up" onPress={() => {router.replace("/confirm")}} />
+        <AuthBtn disabled={!checkbox} title="Sign Up" onPress={() => {router.replace("/confirm")}} />
       </View>
     </SafeAreaView>
   );
