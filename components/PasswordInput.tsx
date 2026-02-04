@@ -4,16 +4,16 @@ import { EyeIcon, EyeSlashIcon, LockIcon } from "phosphor-react-native";
 
 interface PasswordInputProps {
   label: string;
-//   value: string;
-//   onChangeText: (text: string) => void;
+  value: string;
+  onChangeText: (text: string) => void;
   placeholder: string;
   error?: string;
 }
 
 const PasswordInput: React.FC<PasswordInputProps> = ({
   label,
-//   value,
-//   onChangeText,
+  value,
+  onChangeText,
   placeholder,
   error,
 }) => {
@@ -29,8 +29,8 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
           placeholder={placeholder || "Enter your password"}
           placeholderTextColor="#999"
           secureTextEntry={!showPass}
-        //   value={value}
-        //   onChangeText={onChangeText}
+          value={value}
+          onChangeText={onChangeText}
         />
         <TouchableOpacity onPress={() => setShowPass(!showPass)}>
           {showPass ? (

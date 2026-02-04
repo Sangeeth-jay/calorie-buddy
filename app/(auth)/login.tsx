@@ -1,4 +1,5 @@
-import { SafeAreaView, View, Text } from "react-native";
+import { View, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState } from "react";
 
 import { EnvelopeIcon } from "phosphor-react-native";
@@ -9,11 +10,13 @@ import AuthBtn from "../../components/AuthBtn";
 import GoogleIcon from "../../assets/icons/socialMedia/google.svg";
 import AppleIcon from "../../assets/icons/socialMedia/apple.svg";
 import FacebookIcon from "../../assets/icons/socialMedia/facebook.svg";
+import { useRouter } from "expo-router";
 
 const Login = () => {
 
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   return (
     <SafeAreaView className="w-full h-screen-safe py-[62px] px-[20px] bg-white flex-1 justify-around items-center">
@@ -30,11 +33,11 @@ const Login = () => {
       {/* login form */}
       <View className="w-full flex-col justify-between items-center gap-8">
         <View className="w-full px-4">
-          <CustomInput label="Email" Icon={<EnvelopeIcon size={24} color="#999" weight="light" />} placeholder="Email" />
-          <PasswordInput label="Password" placeholder="Password"/>
+          <CustomInput label="Email" Icon={<EnvelopeIcon size={24} color="#999" weight="light" />} placeholder="Email" onChangeText={setEmail} value={email}/>
+          <PasswordInput label="Password" placeholder="Password" onChangeText={setPassword} value={password}/>
         </View>
 
-        <Text className="text-sm">Need an account ? <Text className="text-blue-500">Sign up</Text></Text>
+        <Text className="text-sm">Need an account ? <Text className="text-blue-500" onPress={()=>{router.replace('/sign-up')}}>Sign up</Text></Text>
       </View>
 
       {/* other login option btn */}
@@ -59,7 +62,7 @@ const Login = () => {
 
       {/* login btn */}
       <View className="w-full px-[32px]">
-        <AuthBtn title="Login" onPress={() => {}} />
+        <AuthBtn title="Login" onPress={() => {console.log(email, password)}} />
       </View>
     </SafeAreaView>
   );

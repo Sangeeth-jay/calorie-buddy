@@ -6,9 +6,11 @@ interface CustomInputProps extends TextInputProps {
     Icon?: React.ReactNode;
     placeholder?: string;
     error?: string;
+    onChangeText?: (text: string) => void;
+    value?: string;
 }
 
-const CustomInput: React.FC<CustomInputProps> = ({ label, Icon, placeholder, error, ...props }) => {
+const CustomInput: React.FC<CustomInputProps> = ({ label, Icon, placeholder, error, onChangeText, value, ...props }) => {
   return (
     <View className="mb-4">
       <Text className="mb-1 text-blue-950 font-bold">{label}</Text>
@@ -19,6 +21,8 @@ const CustomInput: React.FC<CustomInputProps> = ({ label, Icon, placeholder, err
           placeholder={placeholder}
           placeholderTextColor="#999"
           keyboardType='email-address'
+          onChangeText={onChangeText}
+          value={value}
           {...props}
         />
       </View>

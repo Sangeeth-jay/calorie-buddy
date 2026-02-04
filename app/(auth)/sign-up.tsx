@@ -1,4 +1,5 @@
-import { SafeAreaView, View, Text } from "react-native";
+import { View, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Checkbox } from "expo-checkbox";
 import React, { useState } from "react";
 
@@ -10,10 +11,13 @@ import AuthBtn from "../../components/AuthBtn";
 import GoogleIcon from "../../assets/icons/socialMedia/google.svg";
 import AppleIcon from "../../assets/icons/socialMedia/apple.svg";
 import FacebookIcon from "../../assets/icons/socialMedia/facebook.svg";
+import { useRouter } from "expo-router";
 
 const Signup = () => {
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
+
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   return (
     <SafeAreaView className="w-full h-screen-safe py-[62px] px-[20px] bg-white flex-1 justify-around items-center">
@@ -34,8 +38,10 @@ const Signup = () => {
             label="Email"
             Icon={<EnvelopeIcon size={24} color="#999" weight="light" />}
             placeholder="Email"
+            onChangeText={setEmail}
+            value={email}
           />
-          <PasswordInput label="Password" placeholder="Password" />
+          <PasswordInput label="Password" placeholder="Password" onChangeText={setPassword} value={password}/>
         </View>
         <View className="flex-row items-center font-thin gap-2 mb-8">
           <Checkbox className="" />
@@ -46,7 +52,7 @@ const Signup = () => {
         </View>
         <Text className="text-sm">
           Already have an account?{" "}
-          <Text className="text-blue-500">Sign in</Text>
+          <Text className="text-blue-500" onPress={() => {router.replace("/login")}}>Log in</Text>
         </Text>
       </View>
 
@@ -74,7 +80,7 @@ const Signup = () => {
 
       {/* login btn */}
       <View className="w-full px-[32px]">
-        <AuthBtn title="Sign Up" onPress={() => {}} />
+        <AuthBtn title="Sign Up" onPress={() => {router.replace("/confirm")}} />
       </View>
     </SafeAreaView>
   );
