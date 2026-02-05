@@ -11,12 +11,28 @@ import GoogleIcon from "../../assets/icons/socialMedia/google.svg";
 import AppleIcon from "../../assets/icons/socialMedia/apple.svg";
 import FacebookIcon from "../../assets/icons/socialMedia/facebook.svg";
 import { useRouter } from "expo-router";
+import { supabase } from "@/src/lib/supabase";
 
 const Login = () => {
 
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const onLogin = async (email:string, password:string) => {
+    const {data, error} = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if(error) {
+      console.log("login error : ", error);
+      return;
+    };
+
+    console.log("Succes : ", data.session);
+    router.replace("/");
+  }
 
   return (
     <SafeAreaView className="w-full h-screen-safe py-[62px] px-[20px] bg-white flex-1 justify-around items-center">
@@ -62,7 +78,7 @@ const Login = () => {
 
       {/* login btn */}
       <View className="w-full px-[32px]">
-        <AuthBtn title="Login" onPress={() => {console.log(email, password)}} />
+        <AuthBtn title="Login" onPress={() => {onLogin(email, password)}} />
       </View>
     </SafeAreaView>
   );

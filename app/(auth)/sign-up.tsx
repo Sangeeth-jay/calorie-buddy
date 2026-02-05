@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Checkbox } from "expo-checkbox";
 import React, { useState } from "react";
@@ -12,6 +12,7 @@ import GoogleIcon from "../../assets/icons/socialMedia/google.svg";
 import AppleIcon from "../../assets/icons/socialMedia/apple.svg";
 import FacebookIcon from "../../assets/icons/socialMedia/facebook.svg";
 import { useRouter } from "expo-router";
+import { supabase } from "@/src/lib/supabase";
 
 const Signup = () => {
 
@@ -19,6 +20,21 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [checkbox, setCheckbox] = useState(false);
+
+  const onSignUp = async (email: string, password: string) => {
+    const {data, error} = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if(error){
+      console.log("sign error : ", error);
+      Alert.alert("Error", error.message);
+    };
+
+    console.log("Succes : ", data.session);
+    router.replace("/");
+  }
 
 
   return (
@@ -82,7 +98,7 @@ const Signup = () => {
 
       {/* sign btn */}
       <View className="w-full px-[32px]">
-        <AuthBtn disabled={!checkbox} title="Sign Up" onPress={() => {router.replace("/confirm")}} />
+        <AuthBtn disabled={!checkbox} title="Sign Up" onPress={() => onSignUp(email, password)} />
       </View>
     </SafeAreaView>
   );

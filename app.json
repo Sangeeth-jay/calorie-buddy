@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icons/appIcons/ios-light.png",
-    "scheme": "cbuddy",
+    "scheme": "caloriebuddy",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
