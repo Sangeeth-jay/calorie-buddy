@@ -18,6 +18,7 @@ const Login = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const onLogin = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -26,6 +27,7 @@ const Login = () => {
     });
 
     if (error) {
+      setError(error.message);
       console.log("login error : ", error);
       return;
     }
@@ -64,13 +66,16 @@ const Login = () => {
             placeholder="Email"
             onChangeText={setEmail}
             value={email}
+            error={error}
           />
           <PasswordInput
             label="Password"
             placeholder="Password"
             onChangeText={setPassword}
             value={password}
+            error={error}
           />
+          {error && <Text className="text-red-500 text-center">{error}</Text>}
         </View>
 
         <Text className="text-sm">
@@ -124,6 +129,7 @@ const Login = () => {
           onPress={() => {
             onLogin(email, password);
           }}
+          loading={false}
         />
       </View>
     </SafeAreaView>

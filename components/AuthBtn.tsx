@@ -1,5 +1,5 @@
-import { TouchableOpacity, Text, ActivityIndicator } from "react-native";
-import React from "react";
+import React, { useState } from "react";
+import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 
 interface AuthBtnProps {
   title: string;
@@ -11,12 +11,21 @@ interface AuthBtnProps {
 const AuthBtn: React.FC<AuthBtnProps> = ({
   title,
   onPress,
-  loading,
+  loading: externalLoading,
   disabled,
 }) => {
+  const [internalLoading, setLoading] = useState(false);
+  const loading = externalLoading || internalLoading;
+
+  const handlePress = () => {
+    onPress();
+    setLoading(true);
+    setTimeout(() => setLoading(false), 1000);
+  };
+
   return (
     <TouchableOpacity
-      onPress={onPress}
+      onPress={handlePress}
       disabled={disabled || loading}
       activeOpacity={0.7}
       className={`w-full py-3 rounded-full items-center justify-center mt-4 ${

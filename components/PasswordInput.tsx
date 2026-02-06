@@ -7,7 +7,7 @@ interface PasswordInputProps {
   value: string;
   onChangeText: (text: string) => void;
   placeholder: string;
-  error?: string;
+  error?: boolean | string;
 }
 
 const PasswordInput: React.FC<PasswordInputProps> = ({
@@ -22,7 +22,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
   return (
     <View className="mb-4">
       <Text className="mb-1 text-blue-950 font-bold">{label}</Text>
-      <View className="flex-row items-center bg-[#F4F4F4] active:border active:border-gray-300 rounded-xl px-3 py-2">
+      <View className={`flex-row items-center ${error ? "border border-red-400" : ""} bg-[#F4F4F4] active:border active:border-gray-300 rounded-xl px-3 py-2`}>
         <LockIcon size={24} color="#999" weight="light" />
         <TextInput
           className="flex-1 ml-2 text-black text-lg"
@@ -40,7 +40,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
           )}
         </TouchableOpacity>
       </View>
-      {error && <Text className="text-red-500 mt-1 text-sm">{error}</Text>}
+      {/* {error && <Text className="text-red-500 mt-1 text-sm">{error}</Text>} */}
     </View>
   );
 };

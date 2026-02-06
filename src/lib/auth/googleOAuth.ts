@@ -6,7 +6,6 @@ import { supabase } from "@/src/lib/supabase";
 WebBrowser.maybeCompleteAuthSession();
 
 const redirectTo = AuthSession.makeRedirectUri();
-  console.log("REDIRECT TO:", redirectTo);
 
 
 async function createSessionFromUrl(url: string) {

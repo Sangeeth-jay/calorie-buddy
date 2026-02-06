@@ -20,6 +20,7 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [checkbox, setCheckbox] = useState(false);
+  const [error, setError] = useState('');
 
   const onSignUp = async (email: string, password: string) => {
     const {data, error} = await supabase.auth.signUp({
@@ -29,11 +30,12 @@ const Signup = () => {
 
     if(error){
       console.log("sign error : ", error);
-      Alert.alert("Error", error.message);
-    };
+      setError(error.message);};
 
     console.log("Succes : ", data.session);
-    router.replace("/");
+
+    if(data.session?.access_token) router.replace("/");
+
   };
 
   //SSO-google
@@ -74,8 +76,10 @@ const Signup = () => {
             placeholder="Email"
             onChangeText={setEmail}
             value={email}
+            error={error}
           />
-          <PasswordInput label="Password" placeholder="Password" onChangeText={setPassword} value={password}/>
+          <PasswordInput label="Password" placeholder="Password" onChangeText={setPassword} value={password} error={error}/>
+          {error && <Text className="text-red-500 text-center">{error}</Text>}
         </View>
         <View className="flex-row items-center font-thin gap-2 mb-8">
           <Checkbox className=""  onValueChange={setCheckbox} value={checkbox}/>
@@ -117,7 +121,7 @@ const Signup = () => {
 
       {/* sign btn */}
       <View className="w-full px-[32px]">
-        <AuthBtn disabled={!checkbox} title="Sign Up" onPress={() => onSignUp(email, password)} />
+        <AuthBtn disabled={!checkbox} title="Sign Up" onPress={() => onSignUp(email, password)} loading={false}/>
       </View>
     </SafeAreaView>
   );
