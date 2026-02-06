@@ -1,4 +1,4 @@
-import { View, Text, Alert } from "react-native";
+import { View, Text, Alert, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Checkbox } from "expo-checkbox";
 import React, { useState } from "react";
@@ -9,7 +9,7 @@ import PasswordInput from "../../components/PasswordInput";
 import AuthBtn from "../../components/AuthBtn";
 
 import GoogleIcon from "../../assets/icons/socialMedia/google.svg";
-import AppleIcon from "../../assets/icons/socialMedia/apple.svg";
+// import AppleIcon from "../../assets/icons/socialMedia/apple.svg";
 import FacebookIcon from "../../assets/icons/socialMedia/facebook.svg";
 import { useRouter } from "expo-router";
 import { supabase } from "@/src/lib/supabase";
@@ -34,7 +34,23 @@ const Signup = () => {
 
     console.log("Succes : ", data.session);
     router.replace("/");
-  }
+  };
+
+  //SSO-google
+    const handleGoogleSignOn = async () => {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+      });
+  
+      if (error) {
+        console.log("Google SSO error : ", error);
+        Alert.alert("Error", error.message);
+        return;
+      }
+  
+      console.log("Google SSO Success : ", data);
+      router.replace("/");
+    };
 
 
   return (
@@ -83,16 +99,19 @@ const Signup = () => {
           </Text>
           <View className="flex-1 h-[1px] bg-gray-300" />
         </View>
-        <View className="w-full flex flex-row justify-center items-center gap-4">
-          <View className=" px-6 py-2 border border-gray-300 items-center rounded-full ">
+        <View className="w-full flex justify-center items-center gap-4">
+          <Pressable className=" w-8/12 px-6 py-2 border border-gray-300 flex-row gap-4 justify-center items-center rounded-full " onPress={handleGoogleSignOn}>
             <GoogleIcon width={24} height={24} />
-          </View>
-          <View className=" px-6 py-2 border border-gray-300 items-center rounded-full ">
+            <Text>Sign in with Google</Text>
+          </Pressable>
+          {/* <Pressable className=" w-8/12 px-6 py-2 border border-gray-300 flex-row gap-4 justify-center items-center rounded-full ">
             <AppleIcon width={24} height={24} />
-          </View>
-          <View className=" px-6 py-2 border border-gray-300 items-center rounded-full ">
+            <Text>Sign in with Apple</Text>
+          </Pressable> */}
+          <Pressable disabled className=" w-8/12 px-6 py-2 border border-gray-300 flex-row gap-4 justify-center items-center rounded-full ">
             <FacebookIcon width={24} height={24} />
-          </View>
+            <Text>Sign in with Facebook</Text>
+          </Pressable>
         </View>
       </View>
 
