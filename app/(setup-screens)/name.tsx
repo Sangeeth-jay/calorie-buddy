@@ -33,7 +33,7 @@ const Name = () => {
       </View>
       <LogoutBtn/>
       <View className="w-full items-center">
-        <NextFillBtn title="Next" onPress={handleNext} />
+        <NextFillBtn disabled={!name} title="Next" onPress={handleNext} />
       </View>
     </SafeAreaView>
   );

@@ -12,12 +12,14 @@ interface DonutChartProps {
   }[];
   size?: number;
   strokeWidth?: number;
+  centerText?: number | string;
 }
 
 const DonutChart: React.FC<DonutChartProps> = ({
   data,
   size = 280,
   strokeWidth = 20,
+  centerText,
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -90,7 +92,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
         }}
       >
         <Text style={{ fontSize: 32, fontWeight: "regular",}} className="text-slate-600">
-          2500
+          {centerText}
         </Text>
         <Text style={{ fontSize: 14, color: "#6B7280" }}>Calories</Text>
       </View>

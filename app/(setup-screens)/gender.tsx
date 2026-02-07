@@ -16,8 +16,9 @@ const Gender = () => {
   const handleGenderSelect = (gender: string) => {
     setSelectedGender(gender);
     updateSetupData("gender", gender);
-    console.log(gender);
+    // console.log(gender);
   };
+
 
   const handleNext = () => {
     router.push("/(setup-screens)/bdate");
@@ -34,10 +35,10 @@ const Gender = () => {
             }}
             className="flex justify-center items-center gap-2"
           >
-            <View className="p-6 bg-blue-100 rounded-full border border-blue-600">
-              <GenderMaleIcon size={72} color="#407BFF" />
+            <View className={`p-6  rounded-full border  ${selectedGender === "Male" ? "border-blue-600 bg-blue-100 " : "bg-gray-100 border-gray-400"}`}>
+              <GenderMaleIcon size={72} color={`${selectedGender === "Male" ? "#407BFF" : "#9CA3AF"}`} />
             </View>
-            <Text className="text-4xl text-blue-600">Male</Text>
+            <Text className={`text-4xl ${selectedGender === "Male" ? "text-blue-600" : "text-gray-400"}`}>Male</Text>
           </Pressable>
           <Pressable
             onPress={() => {
@@ -45,13 +46,14 @@ const Gender = () => {
             }}
             className="flex justify-center items-center gap-2"
           >
-            <View className="p-6 bg-blue-100 rounded-full border border-blue-600">
-              <GenderFemaleIcon size={72} color="#407BFF" />
+            <View className={`p-6  rounded-full border  ${selectedGender === "Female" ? "border-blue-600 bg-blue-100 " : "bg-gray-100 border-gray-400"}`}>
+              <GenderFemaleIcon size={72} color={`${selectedGender === "Female" ? "#407BFF" : "#9CA3AF"}`} />
             </View>
-            <Text className="text-4xl text-blue-600">Female</Text>
+            <Text className={`text-4xl ${selectedGender === "Female" ? "text-blue-600" : "text-gray-400"}`}>Female</Text>
           </Pressable>
         </View>
         <Pressable
+        disabled={true}
           onPress={() => {
             handleGenderSelect("LG TV+");
           }}
@@ -60,7 +62,7 @@ const Gender = () => {
           <Text className="text-blue-500 text-xl">Prefer not to say</Text>
         </Pressable>
       </View>
-      <NextFillBtn title="Next" onPress={handleNext} />
+      <NextFillBtn disabled={selectedGender === ""} title="Next" onPress={handleNext} />
     </SafeAreaView>
   );
 };

@@ -1,20 +1,24 @@
 import { View, Text, Pressable } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useSetup } from "@/src/context/SetupContext";
+
 import NextFillBtn from "../../components/NextFillBtn";
+
 import { router } from "expo-router";
 
 const goals = [
-  { id: "lose-weight", emoji: "🔥", label: "Lose weight" },
-  { id: "gain-muscle", emoji: "💪", label: "Gain muscle" },
-  { id: "maintain-weight", emoji: "⚖️", label: "Maintain weight" },
-  { id: "boost-energy", emoji: "⚡", label: "Boost energy" },
-  { id: "improve-nutrition", emoji: "🥗", label: "Improve nutrition" },
-  { id: "gain-weight", emoji: "🎈", label: "Gain weight" },
+  { id: "lose_weight", emoji: "🔥", label: "Lose weight" },
+  { id: "gain_muscle", emoji: "💪", label: "Gain muscle" },
+  { id: "maintain_weight", emoji: "⚖️", label: "Maintain weight" },
+  { id: "boost_energy", emoji: "⚡", label: "Boost energy" },
+  { id: "improve_nutrition", emoji: "🥗", label: "Improve nutrition" },
+  { id: "gain_weight", emoji: "🎈", label: "Gain weight" },
 ];
 
 const Goal = () => {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
+  const { updateSetupData } = useSetup();
 
   return (
     <SafeAreaView className="bg-white flex-1">
@@ -34,7 +38,7 @@ const Goal = () => {
                 emoji={goal.emoji}
                 label={goal.label}
                 isSelected={selectedGoal === goal.id}
-                onPress={() => setSelectedGoal(goal.id)}
+                onPress={() => {setSelectedGoal(goal.id); updateSetupData("goalType", goal.id);}}
               />
             ))}
           </View>
@@ -45,7 +49,7 @@ const Goal = () => {
           <NextFillBtn
             title="Continue"
             onPress={() => {
-              console.log("Selected goal:", selectedGoal);
+              // console.log("Context data:", setupData);
               router.push("/(after-setup-screens)/calorie-plan");
             }}
             disabled={!selectedGoal}

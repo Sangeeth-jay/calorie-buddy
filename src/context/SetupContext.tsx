@@ -14,6 +14,8 @@ interface SetupData {
   weight: number;
   weightUnit: string; // 'kg' or 'lbs'
   activeLvl: number;
+  goalType?: string; 
+  tdee?: number; 
 }
 
 interface SetupContextType {
@@ -28,8 +30,8 @@ const initialSetupData: SetupData = {
   name: "",
   gender: "",
   bdate: {
-    day: 25,
-    month: 12,
+    day: 15,
+    month: 6,
     year: 1995,
   },
   height: 175,
@@ -52,7 +54,7 @@ export const SetupProvider = ({ children }: { children: ReactNode }) => {
       ...prev,
       [key]: value,
     }));
-    console.log(`Updated ${key}:`, value); // For debugging
+    // console.log(`Updated ${key}:`, value); // For debugging
   };
 
   // Reset all data 

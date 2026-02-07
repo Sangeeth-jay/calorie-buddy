@@ -32,7 +32,7 @@ const Login = () => {
       return;
     }
 
-    console.log("Succes : ", data.session);
+    // console.log("Succes : ", data.session);
     router.replace("/");
   };
 
