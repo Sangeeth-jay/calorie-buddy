@@ -1,17 +1,52 @@
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  ScrollView,
   Image,
-  Pressable,
   Linking,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
 } from "react-native";
-import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { CaretRightIcon, ArrowSquareOutIcon } from "phosphor-react-native";
+import { getUserBundle } from "@/src/services/user.service";
+
+import { supabase } from "@/src/lib/supabase";
+import { ArrowSquareOutIcon, CaretRightIcon } from "phosphor-react-native";
+
+const goalType: Record<string, string> = {
+  lose_weight: "Lose weight",
+  maintain_weight: "Maintain weight",
+  gain_weight: "Gain weight",
+  gain_muscle: "Gain muscle",
+  boost_energy: "Boost energy",
+  improve_nutrition: "Improve nutrition",
+};
+
+const activeLvl: Record<number, string> = {
+  1: "Sedentary Active",
+  2: "Light Active",
+  3: "Moderate Active",
+  4: "Active",
+  5: "Very Active",
+};
+
+const avatarSource = {
+  male: require("../../assets/images/Male.png"),
+  female: require("../../assets/images/Female.png"),
+};
 
 const Profile = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [bundle, setBundle] = useState<{
+    user: any;
+    profile: any;
+    goals: any;
+  } | null>(null);
+
+  // Open BuyMeACoffee
   const openBuyMeACoffee = async () => {
     const url = "https://buymeacoffee.com/sangeethjay";
 
@@ -27,27 +62,56 @@ const Profile = () => {
     }
   };
 
+  // Get user bundle
+  useEffect(() => {
+    let alive = true;
+
+    (async () => {
+      try {
+        const res = await getUserBundle();
+        if (alive && res) setBundle(res);
+      } catch (error) {
+        console.log("Profile load error: ", error);
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.log("logout error : ", error);
+    }
+
+    router.replace("/(auth)/login");
+  };
+
   return (
     <SafeAreaView className="w-full bg-gray-50">
-      <ScrollView
-        className="w-full "
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView className="w-full " showsVerticalScrollIndicator={false}>
         <View className="w-full px-6 pt-6 ">
           {/* User Profile */}
           <View className="w-full bg-white rounded-2xl flex-row items-center gap-4 p-4 mb-6 ">
             <View className="w-20 h-20 rounded-full bg-purple-200 items-center justify-center border-4 border-purple-600">
               <Image
                 resizeMode="contain"
-                source={require("../../assets/images/Male.png")}
+                source={avatarSource[bundle?.profile.gender as keyof typeof avatarSource]}
                 className="w-16 h-20 rounded-full"
               />
             </View>
             <View className="">
               <Text className="text-2xl font-semibold text-gray-800">
-                Hashen Sangeeth
+                {loading ? "Loading..." : bundle?.profile.user_name}
               </Text>
-              <Text className="text-base text-slate-400">user@user.com</Text>
+              <Text className="text-base text-slate-400">
+                {loading ? "Loading..." : bundle?.user.email}
+              </Text>
             </View>
           </View>
 
@@ -67,7 +131,9 @@ const Profile = () => {
                 </Text>
               </View>
               <Text className="text-base text-slate-600 font-medium">
-                Lose Weight
+                {loading
+                  ? "Loading..."
+                  : goalType[bundle?.profile.current_goal as string]}
               </Text>
             </View>
 
@@ -82,7 +148,7 @@ const Profile = () => {
                 </Text>
               </View>
               <Text className="text-lg text-slate-700 font-semibold">
-                2,500{" "}
+                {loading ? "Loading..." : bundle?.goals.calorie_target}{" "}
                 <Text className="text-sm font-medium text-slate-400">cal</Text>
               </Text>
             </View>
@@ -98,7 +164,7 @@ const Profile = () => {
                 </Text>
               </View>
               <Text className="text-lg text-slate-700 font-semibold">
-                181{" "}
+                {loading ? "Loading..." : bundle?.goals.protein_target_g}{" "}
                 <Text className="text-sm font-medium text-slate-400">g</Text>
               </Text>
             </View>
@@ -114,7 +180,7 @@ const Profile = () => {
                 </Text>
               </View>
               <Text className="text-lg text-slate-700 font-semibold">
-                345{" "}
+                {loading ? "Loading..." : bundle?.goals.carbs_target_g}{" "}
                 <Text className="text-sm font-medium text-slate-400">g</Text>
               </Text>
             </View>
@@ -130,7 +196,8 @@ const Profile = () => {
                 </Text>
               </View>
               <Text className="text-lg text-slate-700 font-semibold">
-                72 <Text className="text-sm font-medium text-slate-400">g</Text>
+                {loading ? "Loading..." : bundle?.goals.fat_target_g}{" "}
+                <Text className="text-sm font-medium text-slate-400">g</Text>
               </Text>
             </View>
 
@@ -158,7 +225,7 @@ const Profile = () => {
                     69 kg (current weight)
                   </Text>
                   <Text className="text-sm text-slate-400">
-                    Moderate Active
+                    {loading ? "Loading..." : activeLvl[bundle?.profile.active_level]}
                   </Text>
                 </View>
               </View>
@@ -210,6 +277,18 @@ const Profile = () => {
               <ArrowSquareOutIcon size={24} color="#94a3b8" weight="regular" />
             </View>
           </Pressable>
+
+          {/* Logout Button */}
+          <View className="w-full items-center flex">
+            <Pressable
+              className="w-8/12  bg-red-100 rounded-2xl px-4 py-4 mb-6 active:bg-red-200 active:scale-95 "
+              onPress={handleLogout}
+            >
+              <View className="w-full flex gap-3 items-center">
+                <Text className="font-bold text-xl text-red-500">Logout</Text>
+              </View>
+            </Pressable>
+          </View>
 
           {/* Footer */}
           <View className="w-full items-center py-4">
