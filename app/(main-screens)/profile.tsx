@@ -8,10 +8,17 @@ import {
 } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 
 import { CaretRightIcon, ArrowSquareOutIcon } from "phosphor-react-native";
+import { supabase } from "@/src/lib/supabase";
+
+
 
 const Profile = () => {
+
+  const router = useRouter();
+
   const openBuyMeACoffee = async () => {
     const url = "https://buymeacoffee.com/sangeethjay";
 
@@ -27,12 +34,19 @@ const Profile = () => {
     }
   };
 
+  const handleLogout = async () => {
+     const {error} = await supabase.auth.signOut();
+
+     if(error) {
+      console.log("logout error : ", error);
+     };
+
+     router.replace('/(auth)/login');
+  }
+
   return (
     <SafeAreaView className="w-full bg-gray-50">
-      <ScrollView
-        className="w-full "
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView className="w-full " showsVerticalScrollIndicator={false}>
         <View className="w-full px-6 pt-6 ">
           {/* User Profile */}
           <View className="w-full bg-white rounded-2xl flex-row items-center gap-4 p-4 mb-6 ">
@@ -210,6 +224,17 @@ const Profile = () => {
               <ArrowSquareOutIcon size={24} color="#94a3b8" weight="regular" />
             </View>
           </Pressable>
+
+          {/* Logout Button */}
+          <View className="w-full items-center flex">
+            <Pressable className="w-8/12  bg-red-100 rounded-2xl px-4 py-4 mb-6 active:bg-red-200 active:scale-95 "
+              onPress={handleLogout}
+            >
+              <View className="w-full flex gap-3 items-center">
+                <Text className="font-bold text-xl text-red-500">Logout</Text>
+              </View>
+            </Pressable>
+          </View>
 
           {/* Footer */}
           <View className="w-full items-center py-4">
