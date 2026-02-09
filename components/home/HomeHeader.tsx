@@ -1,7 +1,6 @@
 import { View, Text, Pressable, Image } from "react-native";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { BellIcon } from "phosphor-react-native";
-import { getAuthUser, getProfile } from "@/src/services/user.service";
 
 interface HomeHeaderProps {
   userName: string;
@@ -13,39 +12,8 @@ const avatarSource = {
   female: require("../../assets/images/Female.png"),
 };
 
-const HomeHeader: React.FC<HomeHeaderProps> = () => {
-  const [userName, setUserName] = useState("John Doe");
-  const [gender, setGender] = useState<"male" | "female">("male");
-  const [loadingHeader, setLoadingHeader] = useState(true);
+const HomeHeader: React.FC<HomeHeaderProps> = ({ userName, gender }: { userName: string; gender: "male" | "female" }) => {
 
-  useEffect(() => {
-    let alive = true;
-
-    async function loadHeader() {
-      try {
-        const user = await getAuthUser();
-        if (!user) return;
-
-        const profile = await getProfile(user.id);
-
-        if(!alive) return;
-
-        setUserName(profile?.user_name || "John Doe");
-        setGender(profile?.gender || "male");
-
-      } catch (error) {
-        console.error("Error loading user data for HomeHeader:", error);
-      } finally {
-        setLoadingHeader(false);
-      }
-    }
-    loadHeader();
-
-    return () => {
-      alive = false;
-    };
-    
-  }, []);
 
   return (
     <View className="flex-row justify-between items-center">
