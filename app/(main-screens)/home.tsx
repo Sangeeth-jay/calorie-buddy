@@ -14,7 +14,7 @@ const home = () => {
       <ScrollView className="w-full " showsVerticalScrollIndicator={false}>
         <View className="w-full px-6 pt-6 flex-col gap-6">
 
-          <HomeHeader userName="John Doe" />
+          <HomeHeader/>
 
           <Calendar selectedDate={13} onSelectDate={() => {}} />
 

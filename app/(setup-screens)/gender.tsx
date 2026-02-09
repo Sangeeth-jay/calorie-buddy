@@ -31,25 +31,25 @@ const Gender = () => {
         <View className="w-full flex-row justify-center items-center gap-8">
           <Pressable
             onPress={() => {
-              handleGenderSelect("Male");
+              handleGenderSelect("male");
             }}
             className="flex justify-center items-center gap-2"
           >
-            <View className={`p-6  rounded-full border  ${selectedGender === "Male" ? "border-blue-600 bg-blue-100 " : "bg-gray-100 border-gray-400"}`}>
-              <GenderMaleIcon size={72} color={`${selectedGender === "Male" ? "#407BFF" : "#9CA3AF"}`} />
+            <View className={`p-6  rounded-full border  ${selectedGender === "male" ? "border-blue-600 bg-blue-100 " : "bg-gray-100 border-gray-400"}`}>
+              <GenderMaleIcon size={72} color={`${selectedGender === "male" ? "#407BFF" : "#9CA3AF"}`} />
             </View>
-            <Text className={`text-4xl ${selectedGender === "Male" ? "text-blue-600" : "text-gray-400"}`}>Male</Text>
+            <Text className={`text-4xl ${selectedGender === "male" ? "text-blue-600" : "text-gray-400"}`}>Male</Text>
           </Pressable>
           <Pressable
             onPress={() => {
-              handleGenderSelect("Female");
+              handleGenderSelect("female");
             }}
             className="flex justify-center items-center gap-2"
           >
-            <View className={`p-6  rounded-full border  ${selectedGender === "Female" ? "border-blue-600 bg-blue-100 " : "bg-gray-100 border-gray-400"}`}>
-              <GenderFemaleIcon size={72} color={`${selectedGender === "Female" ? "#407BFF" : "#9CA3AF"}`} />
+            <View className={`p-6  rounded-full border  ${selectedGender === "female" ? "border-blue-600 bg-blue-100 " : "bg-gray-100 border-gray-400"}`}>
+              <GenderFemaleIcon size={72} color={`${selectedGender === "female" ? "#407BFF" : "#9CA3AF"}`} />
             </View>
-            <Text className={`text-4xl ${selectedGender === "Female" ? "text-blue-600" : "text-gray-400"}`}>Female</Text>
+            <Text className={`text-4xl ${selectedGender === "female" ? "text-blue-600" : "text-gray-400"}`}>Female</Text>
           </Pressable>
         </View>
         <Pressable

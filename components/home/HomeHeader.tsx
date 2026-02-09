@@ -1,11 +1,52 @@
 import { View, Text, Pressable, Image } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BellIcon } from "phosphor-react-native";
+import { getAuthUser, getProfile } from "@/src/services/user.service";
 
 interface HomeHeaderProps {
   userName: string;
+  gender: "male" | "female";
 }
-const HomeHeader: React.FC<HomeHeaderProps> = ({ userName }) => {
+
+const avatarSource = {
+  male: require("../../assets/images/Male.png"),
+  female: require("../../assets/images/Female.png"),
+};
+
+const HomeHeader: React.FC<HomeHeaderProps> = () => {
+  const [userName, setUserName] = useState("John Doe");
+  const [gender, setGender] = useState<"male" | "female">("male");
+  const [loadingHeader, setLoadingHeader] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadHeader() {
+      try {
+        const user = await getAuthUser();
+        if (!user) return;
+
+        const profile = await getProfile(user.id);
+
+        if(!alive) return;
+
+        setUserName(profile?.user_name || "John Doe");
+        setGender(profile?.gender || "male");
+
+      } catch (error) {
+        console.error("Error loading user data for HomeHeader:", error);
+      } finally {
+        setLoadingHeader(false);
+      }
+    }
+    loadHeader();
+
+    return () => {
+      alive = false;
+    };
+    
+  }, []);
+
   return (
     <View className="flex-row justify-between items-center">
       <View>
@@ -21,7 +62,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({ userName }) => {
         <Pressable className="w-12 h-12 items-center justify-center bg-purple-200 rounded-full">
           <Image
             resizeMode="contain"
-            source={require("../../assets/images/Male.png")}
+            source={avatarSource[gender]}
             className="w-10 h-10 rounded-full"
           />
         </Pressable>
