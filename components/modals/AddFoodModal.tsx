@@ -35,13 +35,26 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
 }) => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
+  //states for screen swap
+  const [mode, setMode] = useState<"search" | "details">("search");
+  const [selectedFood, setSelectedFood] = useState<any | null>(null);
+
+  //states for searching
   const [query, setQuery] = useState("");
   const [result, setResult] = useState<any[]>([]);
   const [status, setStatus] = useState<FoodSearchResult["status"]>("idle");
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
+  //states for serving & qty
+  const [servingSizeText, setServingSizeText] = useState("");
+  const [servingsText, setServingsText] = useState("1");
+
   useEffect(() => {
     if (isOpen) {
+      setMode("search");
+      setSelectedFood(null);
+      setQuery("");
+
       bottomSheetModalRef.current?.present();
     } else {
       bottomSheetModalRef.current?.dismiss();
@@ -84,10 +97,6 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
 
       const res = await searchFoods(query);
 
-      // console.log("STATUS:", res.status);
-      // console.log("RESULT:", res.data);
-      // console.log("RESULT LENGTH:", res.data.length);
-
       setStatus(res.status as FoodSearchResult["status"]);
       setResult(res.data);
     }, 400);
@@ -119,98 +128,191 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
           <Text className="text-white text-3xl font-semibold">{mealType}</Text>
         </View>
 
-        {/* Search Bar */}
-        <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-2 mx-4 mb-4 gap-2">
-          <MagnifyingGlassIcon size={20} color="#9ca3af" />
-          <BottomSheetTextInput
-            className="flex-1 text-base"
-            placeholder="Search"
-            placeholderTextColor="#9ca3af"
-            value={query}
-            onChangeText={setQuery}
-          />
-        </View>
+        {/* search view */}
+        {mode === "search" && (
+          <>
+            {/* Search Bar */}
+            <View className="flex-row items-center bg-gray-100 rounded-full px-4 py-2 mx-4 mb-4 gap-2">
+              <MagnifyingGlassIcon size={20} color="#9ca3af" />
+              <BottomSheetTextInput
+                className="flex-1 text-base"
+                placeholder="Search"
+                placeholderTextColor="#9ca3af"
+                value={query}
+                onChangeText={setQuery}
+              />
+            </View>
 
-        {/* Action Buttons */}
-        <View className="flex-row gap-3 px-4 mb-4">
-          <Pressable className="flex-1 bg-blue-500 rounded-xl py-5 items-center gap-2">
-            <CubeFocusIcon size={32} color="#fff" />
-            <Text className="text-white text-sm font-semibold">Scan meal</Text>
-          </Pressable>
-          <Pressable className="flex-1 bg-blue-500 rounded-xl py-5 items-center gap-2">
-            <BarcodeIcon size={32} color="#fff" />
-            <Text className="text-white text-sm font-semibold">
-              Scan barcode
-            </Text>
-          </Pressable>
-        </View>
+            {/* Action Buttons */}
+            <View className="flex-row gap-3 px-4 mb-4">
+              <Pressable className="flex-1 bg-blue-500 rounded-xl py-5 items-center gap-2">
+                <CubeFocusIcon size={32} color="#fff" />
+                <Text className="text-white text-sm font-semibold">
+                  Scan meal
+                </Text>
+              </Pressable>
+              <Pressable className="flex-1 bg-blue-500 rounded-xl py-5 items-center gap-2">
+                <BarcodeIcon size={32} color="#fff" />
+                <Text className="text-white text-sm font-semibold">
+                  Scan barcode
+                </Text>
+              </Pressable>
+            </View>
 
-        {/* Recently Added Foods */}
-        <View className="flex-1 px-4">
-          <Text className="text-xs text-gray-400 mb-2">
-            Recently added foods
-          </Text>
-          <View className="flex-1 justify-center items-center">
-            {/* Loading */}
-            {status === "loading" && (
-              <Text className="text-sm text-gray-400 mt-2">
-                Searching food...
+            {/* Recently Added Foods */}
+            <View className="flex-1 px-4">
+              <Text className="text-xs text-gray-400 mb-2">
+                Recently added foods
               </Text>
-            )}
+              <View className="flex-1 justify-center items-center">
+                {/* Loading */}
+                {status === "loading" && (
+                  <Text className="text-sm text-gray-400 mt-2">
+                    Searching food...
+                  </Text>
+                )}
 
-            {/* Results */}
-            {status === "success" && result.length > 0 && (
-              <ScrollView
-                className="mt-2 w-full"
-                contentContainerClassName="px-4 pb-6"
-                showsVerticalScrollIndicator={false}
-                style={{ maxHeight: result.length > 4 ? 320 : undefined }}
-              >
-                {result.map((item) => (
-                  <Pressable
-                    key={item.id}
-                    className="w-full px-4 py-3 mb-3 bg-gray-100 rounded-xl active:bg-gray-200 flex-row items-center justify-between"
+                {/* Results */}
+                {status === "success" && result.length > 0 && (
+                  <ScrollView
+                    className="mt-2 w-full"
+                    contentContainerClassName="px-4 pb-6"
+                    showsVerticalScrollIndicator={false}
+                    style={{ maxHeight: result.length > 4 ? 320 : undefined }}
                   >
-                    <View>
-                      <Text className="font-normal text-lg">{item.name}</Text>
-                      <Text className="font-light text-sm">
-                        {item.calories ?? "--"} cal,{" "}
-                        {item.portion ?? "1 serving"}
-                      </Text>
-                    </View>
+                    {result.map((item) => (
+                      <Pressable
+                        key={item.id}
+                        onPress={() => {
+                          setSelectedFood(item);
+                          setMode("details");
+                          setServingSizeText(item.serving_size ?? "");
+                          setServingsText(item.portion ?? "1");
+                        }}
+                        className="w-full px-4 py-3 mb-3 bg-gray-100 rounded-xl active:bg-gray-200 flex-row items-center justify-between"
+                      >
+                        <View>
+                          <Text className="font-normal text-lg">
+                            {item.name}
+                          </Text>
+                          <Text className="font-light text-sm">
+                            {item.calories ?? "--"} cal,{" "}
+                            {item.portion ?? "1 serving"}
+                          </Text>
+                        </View>
 
-                    <View className="p-2 bg-blue-100 rounded-full">
-                      <PlusIcon size={28} color="#3b82f6" />
-                    </View>
-                  </Pressable>
-                ))}
-              </ScrollView>
-            )}
+                        <View className="p-2 bg-blue-100 rounded-full">
+                          <PlusIcon size={18} color="#3b82f8" />
+                        </View>
+                      </Pressable>
+                    ))}
+                  </ScrollView>
+                )}
 
-            {/* Empty */}
-            {status === "empty" && (
-              <View className="mt-4 items-center">
-                <Text className="text-gray-400 text-sm">N/A</Text>
+                {/* Empty */}
+                {status === "empty" && (
+                  <View className="mt-4 items-center">
+                    <Text className="text-gray-400 text-sm">N/A</Text>
+                  </View>
+                )}
               </View>
-            )}
-          </View>
-        </View>
+            </View>
 
-        {/* Bottom Buttons */}
-        <View className="flex-row gap-3 px-4 py-4">
-          <Pressable
-            onPress={onClose}
-            className="flex-1 bg-[#e5e7eb] rounded-full py-4 items-center"
-          >
-            <Text className="text-lg font-semibold text-gray-700">Cancel</Text>
-          </Pressable>
-          <Pressable
-            onPress={onClose}
-            className="flex-1 bg-blue-500 rounded-full py-4 items-center"
-          >
-            <Text className="text-lg font-semibold text-white">Done</Text>
-          </Pressable>
-        </View>
+            {/* Bottom Buttons */}
+            <View className="flex-row gap-3 px-4 py-4">
+              <Pressable
+                onPress={onClose}
+                className="flex-1 bg-[#e5e7eb] rounded-full py-4 items-center"
+              >
+                <Text className="text-lg font-semibold text-gray-700">
+                  Cancel
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={onClose}
+                className="flex-1 bg-blue-500 rounded-full py-4 items-center"
+              >
+                <Text className="text-lg font-semibold text-white">Done</Text>
+              </Pressable>
+            </View>
+          </>
+        )}
+
+        {/*detailed view*/}
+        {mode === "details" && selectedFood && (
+          <View className="flex-1 px-4">
+            <Text className="text-2xl font-semibold pb-1 border-b border-gray-300">{selectedFood.name}</Text>
+
+            <View className="flex gap-2 py-8">
+              <View className="w-full flex-row items-center justify-between">
+                <Text className="text-lg text-blue-950 font-semibold">
+                  Number of Servings
+                </Text>
+                <View className="w-1/3 bg-gray-100 rounded-2xl px-4 py-1">
+                  <BottomSheetTextInput
+                    value={servingsText}
+                    onChangeText={setServingsText}
+                    placeholderTextColor="#9ca3af"
+                    className="text-base text-right"
+                  />
+                </View>
+              </View>
+              <View className="w-full flex-row items-center justify-between">
+                <Text className="text-lg text-blue-950 font-semibold">
+                  Serving size
+                </Text>
+                <View className="w-1/2 bg-gray-100 rounded-2xl px-4 py-1">
+                  <BottomSheetTextInput
+                    value={servingSizeText}
+                    onChangeText={setServingSizeText}
+                    placeholderTextColor="#9ca3af"
+                    className="text-base text-right"
+                  />
+                </View>
+              </View>
+            </View>
+
+            {/** macro details */}
+            <View className="w-full py-4 px-6 flex-row items-center justify-between border-t border-gray-300">
+              <View className="bg-green-200 w-24 h-24 rounded-full flex items-center justify-center p-3">
+                <Text className="text-2xl font-semibold text-green-800">{selectedFood.calories}</Text>
+                <Text className="text-sm text-green-800">cal</Text>
+              </View>
+              <View className="flex items-center justify-center gap-0">
+                <Text className="text-lg font-medium text-slate-700">{selectedFood.carbs_g}</Text>
+                <Text className="text-lg font-light text-slate-500">Carbs</Text>
+              </View>
+              <View className="flex items-center justify-center">
+                <Text className="text-lg font-medium text-slate-700">{selectedFood.fat_g}</Text>
+                <Text className="text-lg font-light text-slate-500">Fat</Text>
+              </View>
+              <View className="flex items-center justify-center">
+                <Text className="text-lg font-medium text-slate-700">{selectedFood.protein_g}</Text>
+                <Text className="text-lg font-light text-slate-500">Protien</Text>
+              </View>
+            </View>
+
+            <View className="flex-row gap-3 mt-6">
+              <Pressable
+                onPress={() => setMode("search")}
+                className="flex-1 bg-[#e5e7eb] rounded-full py-4 items-center"
+              >
+                <Text className="text-lg font-semibold text-gray-700">
+                  Back
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => console.log(selectedFood)}
+                className="flex-1 bg-blue-500 rounded-full py-4 items-center"
+              >
+                <Text className="text-lg font-semibold text-white">
+                  Confirm
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
       </BottomSheetView>
     </BottomSheetModal>
   );
