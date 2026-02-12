@@ -48,6 +48,26 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
   //states for serving & qty
   const [servingSizeText, setServingSizeText] = useState("");
   const [servingsText, setServingsText] = useState("1");
+  const [baseServingSize, setBaseServingSize] = useState<number>(0);
+
+  //handle servings change
+  const baseSize = baseServingSize > 0 ? baseServingSize : 1;
+  const currentSize = Math.max(1, parseFloat(servingSizeText) || baseSize);
+  const sizeMult = currentSize / baseSize;
+
+  const mul = (value: any) => {
+    if (value === null || value === undefined) return null;
+    const n = Number(value);
+    if (Number.isNaN(n)) return null;
+    return n * sizeMult;
+  };
+
+  const totalCalories = mul(selectedFood?.calories);
+  const totalCarbs = mul(selectedFood?.carbs_g);
+  const totalFat = mul(selectedFood?.fat_g);
+  const totalProtein = mul(selectedFood?.protein_g);
+
+  //------------------------------------------------------------------------
 
   useEffect(() => {
     if (isOpen) {
@@ -107,6 +127,23 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
       }
     };
   }, [query]);
+
+  //handle serving size change
+  const handleServingSize = (text: string) => {
+    const cleaned = text.replace(/[^0-9.]/g, "");
+
+    // allow empty while typing, so user can delete and type again
+    setServingSizeText(cleaned === "" ? "" : cleaned);
+  };
+
+  //handle number of servings change
+  const handleNumbOfServings = (text: string) => {
+    const cleaned = text.replace(/[^0-9.]/g, "");
+    const n = Math.max(1, parseFloat(cleaned) || 1);
+
+    setServingsText(cleaned);
+    setServingSizeText(String(baseServingSize * n));
+  };
 
   return (
     <BottomSheetModal
@@ -186,8 +223,10 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
                         onPress={() => {
                           setSelectedFood(item);
                           setMode("details");
-                          setServingSizeText(item.serving_size ?? "");
-                          setServingsText(item.portion ?? "1");
+                          const base = Number(item.serving_size ?? 0);
+                          setBaseServingSize(base);
+                          setServingSizeText(String(base || ""));
+                          setServingsText("1");
                         }}
                         className="w-full px-4 py-3 mb-3 bg-gray-100 rounded-xl active:bg-gray-200 flex-row items-center justify-between"
                       >
@@ -241,33 +280,39 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
         {/*detailed view*/}
         {mode === "details" && selectedFood && (
           <View className="flex-1 px-4">
-            <Text className="text-2xl font-semibold pb-1 border-b border-gray-300">{selectedFood.name}</Text>
+            <Text className="text-2xl font-semibold pb-1 border-b border-gray-300">
+              {selectedFood.name}
+            </Text>
 
             <View className="flex gap-2 py-8">
               <View className="w-full flex-row items-center justify-between">
                 <Text className="text-lg text-blue-950 font-semibold">
                   Number of Servings
                 </Text>
-                <View className="w-1/3 bg-gray-100 rounded-2xl px-4 py-1">
+                <View className="w-1/3 flex-row gap-0 items-center justify-end bg-gray-100 rounded-2xl px-4 py-1">
                   <BottomSheetTextInput
                     value={servingsText}
-                    onChangeText={setServingsText}
+                    onChangeText={handleNumbOfServings}
                     placeholderTextColor="#9ca3af"
                     className="text-base text-right"
+                    keyboardType="decimal-pad"
                   />
+                  <Text>{selectedFood.portion_type}</Text>
                 </View>
               </View>
               <View className="w-full flex-row items-center justify-between">
                 <Text className="text-lg text-blue-950 font-semibold">
                   Serving size
                 </Text>
-                <View className="w-1/2 bg-gray-100 rounded-2xl px-4 py-1">
+                <View className="w-1/2 flex-row gap-0 items-center justify-end bg-gray-100 rounded-2xl px-4 py-1">
                   <BottomSheetTextInput
                     value={servingSizeText}
-                    onChangeText={setServingSizeText}
+                    onChangeText={handleServingSize}
                     placeholderTextColor="#9ca3af"
                     className="text-base text-right"
+                    keyboardType="decimal-pad"
                   />
+                  <Text>{selectedFood.unit}</Text>
                 </View>
               </View>
             </View>
@@ -275,20 +320,30 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
             {/** macro details */}
             <View className="w-full py-4 px-6 flex-row items-center justify-between border-t border-gray-300">
               <View className="bg-green-200 w-24 h-24 rounded-full flex items-center justify-center p-3">
-                <Text className="text-2xl font-semibold text-green-800">{selectedFood.calories}</Text>
+                <Text className="text-2xl font-semibold text-green-800">
+                  {totalCalories ?? "--"}
+                </Text>
                 <Text className="text-sm text-green-800">cal</Text>
               </View>
               <View className="flex items-center justify-center gap-0">
-                <Text className="text-lg font-medium text-slate-700">{selectedFood.carbs_g}</Text>
+                <Text className="text-lg font-medium text-slate-700">
+                  {totalCarbs == null ? "--" : Number(totalCarbs).toFixed(2).replace(/\.00$/, "")}
+                </Text>
                 <Text className="text-lg font-light text-slate-500">Carbs</Text>
               </View>
               <View className="flex items-center justify-center">
-                <Text className="text-lg font-medium text-slate-700">{selectedFood.fat_g}</Text>
+                <Text className="text-lg font-medium text-slate-700">
+                  {totalFat == null ? "--" : Number(totalFat).toFixed(2).replace(/\.00$/, "")}
+                </Text>
                 <Text className="text-lg font-light text-slate-500">Fat</Text>
               </View>
               <View className="flex items-center justify-center">
-                <Text className="text-lg font-medium text-slate-700">{selectedFood.protein_g}</Text>
-                <Text className="text-lg font-light text-slate-500">Protien</Text>
+                <Text className="text-lg font-medium text-slate-700">
+                  {totalProtein == null ? "--" : Number(totalProtein).toFixed(2).replace(/\.00$/, "")}
+                </Text>
+                <Text className="text-lg font-light text-slate-500">
+                  Protien
+                </Text>
               </View>
             </View>
 
@@ -303,7 +358,15 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
               </Pressable>
 
               <Pressable
-                onPress={() => console.log(selectedFood)}
+                onPress={() =>
+                  console.log(
+                    "serving size: ",
+                    servingSizeText,
+                    "|",
+                    "no of Servings: ",
+                    servingsText,
+                  )
+                }
                 className="flex-1 bg-blue-500 rounded-full py-4 items-center"
               >
                 <Text className="text-lg font-semibold text-white">
