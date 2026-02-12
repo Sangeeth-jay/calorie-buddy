@@ -13,7 +13,7 @@ const Dinner: React.FC<DinnerProps> = ({ onAddItem }) => {
         <View className="w-1/2 flex-col gap-4">
           <View>
             <Text className="text-2xl font-semibold text-blue-950">
-              Breakfast
+              Dinner
             </Text>
             <Text className="text-gray-500 font-light text-sm">{356}cal </Text>
           </View>

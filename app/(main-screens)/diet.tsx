@@ -8,7 +8,7 @@ import BreakFast from "@/components/diet/BreakFast";
 import Lunch from "@/components/diet/Lunch";
 import Dinner from "@/components/diet/Dinner";
 import Calendar from "@/components/Calendar";
-import AddFoodModal from "@/components/modals/AddFoodModal";
+import AddFoodModal from "@/components/modals/AddFood/AddFoodModal";
 
 const Diet = () => {
   const [selectedDate, setSelectedDate] = useState(13);
@@ -85,9 +85,6 @@ const Diet = () => {
           isOpen={isFoodModalOpen}
           mealType={selectedMeal}
           onClose={() => setIsFoodModalOpen(false)}
-          onSave={() => {
-            console.log(selectedMeal);
-          }}
         />
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
