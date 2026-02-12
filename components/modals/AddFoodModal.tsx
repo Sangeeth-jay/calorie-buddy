@@ -14,6 +14,7 @@ import {
 } from "phosphor-react-native";
 import { searchFoods } from "@/src/services/foodSearch";
 import { ScrollView } from "react-native-gesture-handler";
+import { supabase } from "@/src/lib/supabase";
 
 interface AddFoodModalProps {
   isOpen: boolean;
@@ -49,6 +50,9 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
   const [servingSizeText, setServingSizeText] = useState("");
   const [servingsText, setServingsText] = useState("1");
   const [baseServingSize, setBaseServingSize] = useState<number>(0);
+
+  //saving data states
+  const [saving, setSaving] = useState(false);
 
   //handle servings change
   const baseSize = baseServingSize > 0 ? baseServingSize : 1;
@@ -143,6 +147,57 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
 
     setServingsText(cleaned);
     setServingSizeText(String(baseServingSize * n));
+  };
+
+  //handle confirm
+  const handleConfirm = async () => {
+    if (!selectedFood) return;
+
+    try {
+      setSaving(true);
+
+      const {
+        data: { user },
+        error: userErr,
+      } = await supabase.auth.getUser();
+      if (userErr) throw userErr;
+      if (!user) throw new Error("User not found");
+
+      //snapshots of macros
+      const calories = Number(totalCalories) || 0;
+      const protein = Number(totalProtein) || 0;
+      const carbs = Number(totalCarbs) || 0;
+      const fat = Number(totalFat) || 0;
+
+      //payload
+      const payload = {
+        user_id: user.id,
+        food_id: selectedFood.id ? Number(selectedFood.id) : null,
+        meal_type: mealType,
+        servings: Number(servingsText) || 1,
+        food_name_snapshot: selectedFood.name,
+        serving_size_snapshot: servingSizeText || null,
+        unit: selectedFood.unit || null,
+        calories_snapshot: calories,
+        protein_g_snapshot: protein,
+        carbs_g_snapshot: carbs,
+        fat_g_snapshot: fat,
+      };
+
+      const { error: insErr } = await supabase
+        .from("meal_logs")
+        .insert(payload);
+
+      if (insErr) throw insErr;
+
+      setMode("search");
+      setSelectedFood(null);
+      setServingsText("1");
+    } catch (error) {
+      console.log("Meal log insert error:", error);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -327,19 +382,25 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
               </View>
               <View className="flex items-center justify-center gap-0">
                 <Text className="text-lg font-medium text-slate-700">
-                  {totalCarbs == null ? "--" : Number(totalCarbs).toFixed(2).replace(/\.00$/, "")}
+                  {totalCarbs == null
+                    ? "--"
+                    : Number(totalCarbs).toFixed(2).replace(/\.00$/, "")}
                 </Text>
                 <Text className="text-lg font-light text-slate-500">Carbs</Text>
               </View>
               <View className="flex items-center justify-center">
                 <Text className="text-lg font-medium text-slate-700">
-                  {totalFat == null ? "--" : Number(totalFat).toFixed(2).replace(/\.00$/, "")}
+                  {totalFat == null
+                    ? "--"
+                    : Number(totalFat).toFixed(2).replace(/\.00$/, "")}
                 </Text>
                 <Text className="text-lg font-light text-slate-500">Fat</Text>
               </View>
               <View className="flex items-center justify-center">
                 <Text className="text-lg font-medium text-slate-700">
-                  {totalProtein == null ? "--" : Number(totalProtein).toFixed(2).replace(/\.00$/, "")}
+                  {totalProtein == null
+                    ? "--"
+                    : Number(totalProtein).toFixed(2).replace(/\.00$/, "")}
                 </Text>
                 <Text className="text-lg font-light text-slate-500">
                   Protien
@@ -358,19 +419,11 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
               </Pressable>
 
               <Pressable
-                onPress={() =>
-                  console.log(
-                    "serving size: ",
-                    servingSizeText,
-                    "|",
-                    "no of Servings: ",
-                    servingsText,
-                  )
-                }
+                onPress={handleConfirm}
                 className="flex-1 bg-blue-500 rounded-full py-4 items-center"
               >
                 <Text className="text-lg font-semibold text-white">
-                  Confirm
+                  {saving ? "Saving..." : "Confirm"}
                 </Text>
               </Pressable>
             </View>
