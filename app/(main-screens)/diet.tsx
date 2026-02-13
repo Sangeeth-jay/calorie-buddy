@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, Alert } from "react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -11,7 +11,7 @@ import Calendar from "@/components/Calendar";
 import AddFoodModal from "@/components/modals/AddFood/AddFoodModal";
 
 import { supabase } from "@/src/lib/supabase";
-import { fetchMealLogsForDay, MealLog } from "@/src/services/meals";
+import { deleteMealLog, fetchMealLogsForDay, MealLog } from "@/src/services/meals";
 import { groupMealLogs } from "@/src/services/mealGroup";
 import { getHomeSummary } from "@/src/services/mealSummary";
 
@@ -81,6 +81,29 @@ const Diet = () => {
     setSelectedMeal(mealType);
     setIsFoodModalOpen(true);
   };
+
+  const handleDelete = (logId: string | number) => {
+    Alert.alert("Delete", "Are you sure?", [
+      {text: "Cancel", style: "cancel"},
+      {
+        text:"Delete",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const user = await supabase.auth.getUser();
+            const userId = user.data.user?.id;
+            if (!userId) return;
+
+            await deleteMealLog(userId, logId);
+
+            refreshDiet();
+          } catch(error) {
+            console.log("delete meal log error", error);
+          }
+        }
+      }
+    ])
+  }
 
   // -------------------------
   // Effects
@@ -173,14 +196,17 @@ const Diet = () => {
                 <BreakFast
                   logs={grouped.Breakfast}
                   onAddItem={() => handleAddItem("Breakfast")}
+                  onDelete={handleDelete}
                 />
                 <Lunch
                   logs={grouped.Lunch}
                   onAddItem={() => handleAddItem("Lunch")}
+                  onDelete={handleDelete}
                 />
                 <Dinner
                   logs={grouped.Dinner}
                   onAddItem={() => handleAddItem("Dinner")}
+                  onDelete={handleDelete}
                 />
               </View>
             </View>

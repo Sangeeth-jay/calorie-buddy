@@ -29,3 +29,14 @@ export async function fetchMealLogsForDay(userId: string, day: string) {
   if (error) throw error;
   return (data ?? []) as MealLog[];
 }
+
+export async function deleteMealLog(userId:string, logId: string | number) {
+  const {error} = await supabase
+    .from("meal_logs")
+    .delete()
+    .eq("id", logId)
+    .eq("user_id", userId);
+
+  if (error) throw error;
+  
+}

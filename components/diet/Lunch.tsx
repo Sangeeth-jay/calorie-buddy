@@ -2,13 +2,15 @@ import { View, Text, Pressable } from "react-native";
 import React from "react";
 import Meal from "../../assets/images/meal-2-44.svg";
 import { MealLog } from "@/src/services/meals";
+import MealLogRow from "./MealLogRow";
 
 type Props = {
   logs: MealLog[];
   onAddItem: () => void;
+  onDelete: (id: string | number) => void;
 };
 
-const Lunch: React.FC<Props> = ({ logs, onAddItem }) => {
+const Lunch: React.FC<Props> = ({ logs, onAddItem, onDelete }) => {
   const totalCalories = logs.reduce((sum, item) => {
     return sum + (item.calories_snapshot ?? 0);
   }, 0);
@@ -37,29 +39,11 @@ const Lunch: React.FC<Props> = ({ logs, onAddItem }) => {
               ) : (
                 <View className="gap-2">
                   {logs.map((item) => (
-                    <View
+                    <MealLogRow
                       key={item.id}
-                      className="w-full bg-gray-100 px-3 py-2 flex-row justify-between items-center rounded-lg"
-                    >
-                      <View>
-                        <Text className="text-gray-800 font-medium">
-                          {item.food_name_snapshot ?? "Food"}
-                          <Text>
-                            {item.servings && item.servings !== 1
-                              ? ` x ${item.servings}`
-                              : ""}
-                          </Text>
-                        </Text>
-                        <Text className="font-light">
-                          {item.serving_size_snapshot}
-                          {item.unit}
-                        </Text>
-                      </View>
-
-                      <Text className="text-gray-500">
-                        {item.calories_snapshot?.toFixed(0) ?? 0} cal
-                      </Text>
-                    </View>
+                      item={item}
+                      onDeletePress={onDelete}
+                    />
                   ))}
                 </View>
               )}
