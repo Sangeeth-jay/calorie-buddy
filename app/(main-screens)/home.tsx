@@ -39,6 +39,18 @@ const Home = () => {
   const goalFat = summary?.targets?.fat.toFixed(0) ?? 0;
   const consumedFat = summary?.eaten?.fat.toFixed(0) ?? 0;
 
+  const totalGoal = summary?.targets?.calories ?? 0;
+  const perMealGoal = totalGoal / 3;
+
+  const breakfastGoal = Math.round(perMealGoal);
+  const lunchGoal = Math.round(perMealGoal);
+  const dinnerGoal = Math.round(perMealGoal);
+
+  const mealCals = summary?.mealCalories ?? {};
+  const breakfastConsumed = Math.round(mealCals.Breakfast ?? 0);
+  const lunchConsumed = Math.round(mealCals.Lunch ?? 0);
+  const dinnerConsumed = Math.round(mealCals.Dinner ?? 0);
+
   // -------------------------
   // Effects
   // -------------------------
@@ -58,8 +70,6 @@ const Home = () => {
         if (!alive) return;
         setSummary(daySummary);
 
-        // ✅ correct log
-        console.log("Home summary:", daySummary);
       } catch (error) {
         console.log("Home screen:", error);
       } finally {
@@ -99,7 +109,11 @@ const Home = () => {
 
           <HydrationCard />
 
-          <MealSummary />
+          <MealSummary 
+            breakfast={{ goal: breakfastGoal, consumed: breakfastConsumed }}
+            lunch={{ goal: lunchGoal, consumed: lunchConsumed }}
+            dinner={{ goal: dinnerGoal, consumed: dinnerConsumed }}
+          />
 
           {loading && <Text className="text-xs text-gray-400">Loading...</Text>}
         </View>
