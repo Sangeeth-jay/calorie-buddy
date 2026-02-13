@@ -1,33 +1,57 @@
 import { View, Text, Pressable } from "react-native";
 import React from "react";
 import Meal from "../../assets/images/meal-2-44.svg";
+import { MealLog } from "@/src/services/meals";
+import MealLogRow from "./MealLogRow";
 
-interface LunchProps {
+type Props = {
+  logs: MealLog[];
   onAddItem: () => void;
-}
+  onDelete: (id: string | number) => void;
+};
 
-const Lunch: React.FC<LunchProps> = ({ onAddItem }) => {
+const Lunch: React.FC<Props> = ({ logs, onAddItem, onDelete }) => {
+  const totalCalories = logs.reduce((sum, item) => {
+    return sum + (item.calories_snapshot ?? 0);
+  }, 0);
   return (
-    <View className="w-full bg-white rounded-xl px-4 py-6 ">
+    <View className="w-full bg-white rounded-xl px-4 pb-6 ">
       <View className="w-full flex-row items-center justify-between">
-        <View className="w-1/2 flex-col gap-4">
-          <View>
-            <Text className="text-2xl font-semibold text-blue-950">Lunch</Text>
-            <Text className="text-gray-500 font-light text-sm">{356}cal </Text>
-          </View>
-          <View className="w-full gap-1">
-            <View className="w-full border-b border-gray-300 items-center">
-              <Text className="text-gray-300 font-light italic">
-                No item log.
+        <View className="w-full flex-col">
+          <View className="w-full flex-row items-center justify-between">
+            <View>
+              <Text className="text-2xl font-semibold text-blue-950">
+                Lunch
+              </Text>
+              <Text className="text-gray-500 font-light text-sm">
+                {totalCalories} cal{" "}
               </Text>
             </View>
-            <Pressable onPress={onAddItem}>
+            <View>
+              <Meal width={100} height={100} />
+            </View>
+          </View>
+
+          <View className="w-full gap-1">
+            <View className="w-full border-b pb-2 border-gray-300 items-center">
+              {logs.length === 0 ? (
+                <Text className="text-gray-300 italic">No item log.</Text>
+              ) : (
+                <View className="gap-2">
+                  {logs.map((item) => (
+                    <MealLogRow
+                      key={item.id}
+                      item={item}
+                      onDeletePress={onDelete}
+                    />
+                  ))}
+                </View>
+              )}
+            </View>
+            <Pressable className="items-center mt-2" onPress={onAddItem}>
               <Text className="text-blue-600 font-medium">Add Item +</Text>
             </Pressable>
           </View>
-        </View>
-        <View>
-          <Meal width={100} height={100} />
         </View>
       </View>
     </View>
