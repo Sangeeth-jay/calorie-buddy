@@ -1,21 +1,31 @@
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import React from "react";
 import Svg, { Line } from "react-native-svg";
 
 import Glass from "@/assets/images/cocktail-33.svg";
 
-const HydrationCard = () => {
+type Props = {
+  onPress: () => void;
+  drinked: number;
+  waterGoal: number;
+  loading: boolean;
+};
+
+const HydrationCard: React.FC<Props> = ({onPress, drinked, waterGoal}) => {
   //below should add context api data
-  const drinked = 1650;
-  const waterGoal = 3500;
-  const precentage: any = ((drinked / waterGoal) * 100).toFixed(0);
+  const drink = drinked;
+  const goal = waterGoal;
+  const precentage: any = ((drink / goal) * 100).toFixed(0);
 
   //for progress bar
   const totalWidth = 200;
   const progressWidth: number = (precentage / 100) * totalWidth;
 
   return (
-    <View className="bg-[#C6E5FF] w-full p-4 rounded-xl flex-row justify-between">
+    <Pressable
+      onPress={onPress}
+      className="bg-[#C6E5FF] w-full p-4 rounded-xl flex-row justify-between"
+    >
       <View className="flex gap-2 w-2/3">
         <Text className="text-xl font-semibold text-blue-950">Hydration</Text>
         <View className="flex-row items-center gap-4">
@@ -54,7 +64,7 @@ const HydrationCard = () => {
       <View className="scale-x-[-1]">
         <Glass width={100} height={100} />
       </View>
-    </View>
+    </Pressable>
   );
 };
 

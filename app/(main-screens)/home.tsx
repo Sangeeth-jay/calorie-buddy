@@ -11,6 +11,10 @@ import { useHomeHeaderData } from "@/src/hooks/useHomeHeaderData";
 
 import { getHomeSummary } from "@/src/services/mealSummary";
 import { supabase } from "@/src/lib/supabase";
+import AddWaterModal from "@/components/modals/AddWater/AddWaterModal";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { getLatestWaterTarget, getTodayWaterIntake } from "@/src/services/waterService";
 
 const Home = () => {
   const { userName, gender } = useHomeHeaderData();
@@ -24,6 +28,11 @@ const Home = () => {
     new Date().toISOString().slice(0, 10),
   );
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isMoadlOpen, setIsModalOpen] = useState(false);
+
+  const [drinked, setDrinked] = useState(0);
+  const [waterGoal, setWaterGoal] = useState(3500);
+  const [waterLoading, setWaterLoading] = useState(true);
 
   const refreshHome = () => setRefreshKey((x) => x + 1);
 
@@ -51,6 +60,23 @@ const Home = () => {
   const lunchConsumed = Math.round(mealCals.Lunch ?? 0);
   const dinnerConsumed = Math.round(mealCals.Dinner ?? 0);
 
+  const refreshWater = async () => {
+  try {
+    setWaterLoading(true);
+    const [intake, target] = await Promise.all([
+      getTodayWaterIntake(),
+      getLatestWaterTarget(),
+    ]);
+
+    setDrinked(intake);
+    if (target) setWaterGoal(target);
+  } catch (e) {
+    console.log("refreshWater error:", e);
+  } finally {
+    setWaterLoading(false);
+  }
+};
+
   // -------------------------
   // Effects
   // -------------------------
@@ -69,7 +95,8 @@ const Home = () => {
 
         if (!alive) return;
         setSummary(daySummary);
-
+        refreshWater();
+        refreshHome();
       } catch (error) {
         console.log("Home screen:", error);
       } finally {
@@ -86,39 +113,54 @@ const Home = () => {
   // UI
   // -------------------------
   return (
-    <SafeAreaView className="w-full">
-      <ScrollView className="w-full" showsVerticalScrollIndicator={false}>
-        <View className="w-full px-6 pt-6 flex-col gap-6">
-          <HomeHeader userName={userName} gender={gender} />
+    <GestureHandlerRootView>
+      <BottomSheetModalProvider>
+        <SafeAreaView className="w-full">
+          <ScrollView className="w-full" showsVerticalScrollIndicator={false}>
+            <View className="w-full px-6 pt-6 flex-col gap-6">
+              <HomeHeader userName={userName} gender={gender} />
 
-          {/* TODO: connect Calendar to selectedDayISO like Diet screen */}
-          <Calendar selectedDate={13} onSelectDate={() => {}} />
+              {/* TODO: connect Calendar to selectedDayISO like Diet screen */}
+              <Calendar selectedDate={13} onSelectDate={() => {}} />
 
-          {/* pass summary values to card */}
-          <CaloriesCard
-            selectedDate={13}
-            goalCalories={goalCal}
-            consumedCalories={consumedCal}
-            goalProtein={goalProtein}
-            consumedProtein={consumedProtein}
-            goalCarbs={goalCarbs}
-            consumedCarbs={consumedCarbs}
-            goalFat={goalFat}
-            consumedFat={consumedFat}
-          />
+              {/* pass summary values to card */}
+              <CaloriesCard
+                selectedDate={13}
+                goalCalories={goalCal}
+                consumedCalories={consumedCal}
+                goalProtein={goalProtein}
+                consumedProtein={consumedProtein}
+                goalCarbs={goalCarbs}
+                consumedCarbs={consumedCarbs}
+                goalFat={goalFat}
+                consumedFat={consumedFat}
+              />
 
-          <HydrationCard />
+              <HydrationCard
+                drinked={drinked}
+                waterGoal={waterGoal}
+                onPress={() => setIsModalOpen(true)}
+                loading={waterLoading}
+              />
+              <MealSummary
+                breakfast={{ goal: breakfastGoal, consumed: breakfastConsumed }}
+                lunch={{ goal: lunchGoal, consumed: lunchConsumed }}
+                dinner={{ goal: dinnerGoal, consumed: dinnerConsumed }}
+              />
 
-          <MealSummary 
-            breakfast={{ goal: breakfastGoal, consumed: breakfastConsumed }}
-            lunch={{ goal: lunchGoal, consumed: lunchConsumed }}
-            dinner={{ goal: dinnerGoal, consumed: dinnerConsumed }}
-          />
+              {loading && (
+                <Text className="text-xs text-gray-400">Loading...</Text>
+              )}
+            </View>
+          </ScrollView>
+        </SafeAreaView>
 
-          {loading && <Text className="text-xs text-gray-400">Loading...</Text>}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        <AddWaterModal
+          isOpen={isMoadlOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 };
 
