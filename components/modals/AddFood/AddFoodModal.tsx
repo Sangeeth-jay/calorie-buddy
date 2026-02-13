@@ -24,6 +24,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
   isOpen,
   onClose,
   mealType,
+  
 }) => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 

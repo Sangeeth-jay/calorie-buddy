@@ -13,8 +13,14 @@ import AddFoodModal from "@/components/modals/AddFood/AddFoodModal";
 import { supabase } from "@/src/lib/supabase";
 import { fetchMealLogsForDay, MealLog } from "@/src/services/meals";
 import { groupMealLogs } from "@/src/services/mealGroup";
+import { getHomeSummary } from "@/src/services/mealSummary";
+
+type MealType = "Breakfast" | "Lunch" | "Dinner";
 
 const Diet = () => {
+  // -------------------------
+  // State
+  // -------------------------
   const [selectedDateNumber, setSelectedDateNumber] = useState(
     new Date().getDate(),
   );
@@ -23,12 +29,20 @@ const Diet = () => {
   );
 
   const [logs, setLogs] = useState<MealLog[]>([]);
+  const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  // Get current week dates
+  // Modal state
+  const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
+  const [selectedMeal, setSelectedMeal] = useState<MealType>("Breakfast");
+
+  // -------------------------
+  // Helpers (pure functions)
+  // -------------------------
   const getCurrentWeek = () => {
     const today = new Date();
-    const currentDay = today.getDay();
+    const currentDay = today.getDay(); // 0..6
     const week: { date: number; fullDate: Date }[] = [];
 
     for (let i = 0; i < 7; i++) {
@@ -39,34 +53,60 @@ const Diet = () => {
     return week;
   };
 
+  // -------------------------
+  // Derived values
+  // -------------------------
   const weekDates = useMemo(() => getCurrentWeek(), []);
+  const grouped = useMemo(() => groupMealLogs(logs), [logs]);
 
+  const goalCalories = summary?.targets?.calories ?? 0;
+  const eatenCalories = summary?.eaten?.calories ?? 0;
+  const remainingCalories = Math.max(0, goalCalories - eatenCalories);
+
+  const refreshDiet = () => setRefreshKey((x) => x + 1);
+
+  // -------------------------
+  // Handlers
+  // -------------------------
   const handleSelectDayNumber = (dayNum: number) => {
     setSelectedDateNumber(dayNum);
 
     const match = weekDates.find((d) => d.date === dayNum);
     if (!match) return;
 
-    const iso = match.fullDate.toISOString().slice(0, 10);
-    setSelectedDayISO(iso);
+    setSelectedDayISO(match.fullDate.toISOString().slice(0, 10));
   };
 
-  const grouped = useMemo(() => groupMealLogs(logs), [logs]);
+  const handleAddItem = (mealType: MealType) => {
+    setSelectedMeal(mealType);
+    setIsFoodModalOpen(true);
+  };
 
+  // -------------------------
+  // Effects
+  // -------------------------
   useEffect(() => {
     let alive = true;
 
     (async () => {
-      const userRes = await supabase.auth.getUser();
-      const userId = userRes.data.user?.id;
-      if (!userId) return;
-
-      setLoading(true);
       try {
-        const data = await fetchMealLogsForDay(userId, selectedDayISO);
-        if (alive) setLogs(data);
+        setLoading(true);
+
+        const userRes = await supabase.auth.getUser();
+        const userId = userRes.data.user?.id;
+        if (!userId) return;
+
+        const [dayLogs, daySummary] = await Promise.all([
+          fetchMealLogsForDay(userId, selectedDayISO),
+          getHomeSummary(userId, selectedDayISO),
+        ]);
+
+        if (!alive) return;
+
+        setLogs(dayLogs);
+        setSummary(daySummary);
       } catch (e) {
-        console.log("load meal logs error:", e);
+        console.log("Diet load error:", e);
       } finally {
         if (alive) setLoading(false);
       }
@@ -75,19 +115,11 @@ const Diet = () => {
     return () => {
       alive = false;
     };
-  }, [selectedDayISO]);
+  }, [selectedDayISO, refreshKey]);
 
-  // Modal state
-  const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
-  const [selectedMeal, setSelectedMeal] = useState<
-    "Breakfast" | "Lunch" | "Dinner"
-  >("Breakfast");
-
-  // Open modal with meal type
-  const handleAddItem = (mealType: "Breakfast" | "Lunch" | "Dinner") => {
-    setSelectedMeal(mealType);
-    setIsFoodModalOpen(true);
-  };
+  // -------------------------
+  // UI
+  // -------------------------
 
   return (
     <GestureHandlerRootView>
@@ -115,21 +147,21 @@ const Diet = () => {
                 <View className="flex-row items-center justify-center gap-6">
                   <View className="items-center">
                     <Text className="text-gray-600 text-2xl font-semibold">
-                      2217
+                      {goalCalories.toFixed(0)}
                     </Text>
                     <Text className="text-gray-400 text-xs">Goal</Text>
                   </View>
                   <Text className="text-gray-400 text-xl">-</Text>
                   <View className="items-center">
                     <Text className="text-gray-600 text-2xl font-semibold">
-                      0
+                      {eatenCalories.toFixed(0)}
                     </Text>
                     <Text className="text-gray-400 text-xs">Food</Text>
                   </View>
                   <Text className="text-gray-400 text-xl">=</Text>
                   <View className="items-center">
                     <Text className="text-blue-600 text-3xl font-bold">
-                      2217
+                      {remainingCalories.toFixed(0)}
                     </Text>
                     <Text className="text-gray-400 text-xs">Remaining</Text>
                   </View>
@@ -159,7 +191,10 @@ const Diet = () => {
         <AddFoodModal
           isOpen={isFoodModalOpen}
           mealType={selectedMeal}
-          onClose={() => setIsFoodModalOpen(false)}
+          onClose={() => {
+            setIsFoodModalOpen(false);
+            refreshDiet();
+          }}
         />
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
