@@ -4,14 +4,22 @@ import CalorieGauge from "./CalorieGauge";
 
 interface CaloriesCardProps {
   selectedDate?: number;
+  goalCalories: number;
+  consumedCalories: number;
+  goalProtein: number;
+  consumedProtein: number;
+  goalCarbs: number;
+  consumedCarbs: number;
+  goalFat: number;
+  consumedFat: number;
 }
-const CaloriesCard: React.FC<CaloriesCardProps> = ({ selectedDate }) => {
-  //replace below with context api data
+const CaloriesCard: React.FC<CaloriesCardProps> = ({ selectedDate, goalCalories, consumedCalories, goalProtein, consumedProtein, goalCarbs, consumedCarbs, goalFat, consumedFat }) => {
+  
   const nutritionData = {
-    calories: { consumed: 1098, goal: 2217 },
-    protein: { consumed: 57, goal: 122 },
-    carbs: { consumed: 207, goal: 631 },
-    fat: { consumed: 4, goal: 18 },
+    calories: { consumed: consumedCalories, goal: goalCalories },
+    protein: { consumed: consumedProtein, goal: goalProtein },
+    carbs: { consumed: consumedCarbs, goal: goalCarbs },
+    fat: { consumed: consumedFat, goal: goalFat },
   };
 
   return (
@@ -45,8 +53,8 @@ const CaloriesCard: React.FC<CaloriesCardProps> = ({ selectedDate }) => {
         <View className="flex-row gap-2 items-center">
           <View>
             <Image
-              source={require("../../assets/images/fruit.png")}
-              className="w-8 h-6"
+              source={require("../../assets/images/icons8-fruit-100.png")}
+              className="w-10 h-10"
             />
           </View>
           <View>

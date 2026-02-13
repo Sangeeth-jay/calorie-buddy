@@ -38,7 +38,7 @@ export default function MealLogRow({ item, onDeletePress }: Props) {
         </View>
 
         <Text className="text-gray-500">
-          {item.calories_snapshot?.toFixed(0) ?? 0} cal
+          {item.calories_snapshot?.toFixed(0) ?? 0} kcal
         </Text>
       </View>
     </Swipeable>

@@ -25,7 +25,7 @@ const Dinner: React.FC<Props> = ({ logs, onAddItem, onDelete }) => {
                 Dinner
               </Text>
               <Text className="text-gray-500 font-light text-sm">
-                {totalCalories} cal{" "}
+                {totalCalories} kcal{" "}
               </Text>
             </View>
             <View>
