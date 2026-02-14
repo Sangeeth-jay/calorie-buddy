@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { ScrollView, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -14,7 +14,11 @@ import { supabase } from "@/src/lib/supabase";
 import AddWaterModal from "@/components/modals/AddWater/AddWaterModal";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { getLatestWaterTarget, getTodayWaterIntake } from "@/src/services/waterService";
+import {
+  getLatestWaterTarget,
+  getTodayWaterIntake,
+} from "@/src/services/waterService";
+import { useFocusEffect } from "expo-router";
 
 const Home = () => {
   const { userName, gender } = useHomeHeaderData();
@@ -27,14 +31,30 @@ const Home = () => {
   const [selectedDayISO, setSelectedDayISO] = useState(
     new Date().toISOString().slice(0, 10),
   );
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [selectedDateNumber, setSelectedDateNumber] = useState(
+    new Date().getDate(),
+  );
   const [isMoadlOpen, setIsModalOpen] = useState(false);
 
   const [drinked, setDrinked] = useState(0);
   const [waterGoal, setWaterGoal] = useState(3500);
   const [waterLoading, setWaterLoading] = useState(true);
 
-  const refreshHome = () => setRefreshKey((x) => x + 1);
+  // -------------------------
+  // Helpers (pure functions)
+  // -------------------------
+  const getCurrentWeek = () => {
+    const today = new Date();
+    const currentDay = today.getDay(); // 0..6
+    const week: { date: number; fullDate: Date }[] = [];
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - currentDay + i);
+      week.push({ date: d.getDate(), fullDate: d });
+    }
+    return week;
+  };
 
   // -------------------------
   // Derived
@@ -60,54 +80,73 @@ const Home = () => {
   const lunchConsumed = Math.round(mealCals.Lunch ?? 0);
   const dinnerConsumed = Math.round(mealCals.Dinner ?? 0);
 
+  const weekDates = useMemo(() => getCurrentWeek(), []);
+
   const refreshWater = async () => {
-  try {
-    setWaterLoading(true);
-    const [intake, target] = await Promise.all([
-      getTodayWaterIntake(),
-      getLatestWaterTarget(),
-    ]);
+    try {
+      setWaterLoading(true);
+      const [intake, target] = await Promise.all([
+        getTodayWaterIntake(selectedDayISO),
+        getLatestWaterTarget(),
+      ]);
+      setDrinked(intake);
+      if (target) setWaterGoal(target);
+    } catch (e) {
+      console.log("refreshWater error:", e);
+    } finally {
+      setWaterLoading(false);
+    }
+  };
 
-    setDrinked(intake);
-    if (target) setWaterGoal(target);
-  } catch (e) {
-    console.log("refreshWater error:", e);
-  } finally {
-    setWaterLoading(false);
+  // -------------------------
+  // Handlers
+  // -------------------------
+  const handleSelectDayNumber = (dayNum: number) => {
+    setSelectedDateNumber(dayNum);
+
+    const match = weekDates.find((d) => d.date === dayNum);
+    if (!match) return;
+
+    setSelectedDayISO(match.fullDate.toISOString().slice(0, 10));
+  };
+
+  const handleOnclose = () => {
+    refreshWater();
+    setIsModalOpen(false);
   }
-};
-
   // -------------------------
   // Effects
   // -------------------------
-  useEffect(() => {
-    let alive = true;
+  useFocusEffect(
+    useCallback(() => {
+      let alive = true;
 
-    (async () => {
-      try {
-        setLoading(true);
+      (async () => {
+        try {
+          setLoading(true);
 
-        const { data } = await supabase.auth.getUser();
-        const userId = data.user?.id;
-        if (!userId) return;
+          const { data } = await supabase.auth.getUser();
+          const userId = data.user?.id;
+          if (!userId) return;
 
-        const daySummary = await getHomeSummary(userId, selectedDayISO);
+          const daySummary = await getHomeSummary(userId, selectedDayISO);
 
-        if (!alive) return;
-        setSummary(daySummary);
-        refreshWater();
-        refreshHome();
-      } catch (error) {
-        console.log("Home screen:", error);
-      } finally {
-        if (alive) setLoading(false);
-      }
-    })();
+          if (!alive) return;
 
-    return () => {
-      alive = false;
-    };
-  }, [selectedDayISO, refreshKey]);
+          setSummary(daySummary);
+          refreshWater();
+        } catch (error) {
+          console.log("Home screen:", error);
+        } finally {
+          if (alive) setLoading(false);
+        }
+      })();
+
+      return () => {
+        alive = false;
+      };
+    }, [selectedDayISO]),
+  );
 
   // -------------------------
   // UI
@@ -121,7 +160,10 @@ const Home = () => {
               <HomeHeader userName={userName} gender={gender} />
 
               {/* TODO: connect Calendar to selectedDayISO like Diet screen */}
-              <Calendar selectedDate={13} onSelectDate={() => {}} />
+              <Calendar
+                selectedDate={selectedDateNumber}
+                onSelectDate={handleSelectDayNumber}
+              />
 
               {/* pass summary values to card */}
               <CaloriesCard
@@ -157,7 +199,7 @@ const Home = () => {
 
         <AddWaterModal
           isOpen={isMoadlOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleOnclose}
         />
       </BottomSheetModalProvider>
     </GestureHandlerRootView>

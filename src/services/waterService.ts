@@ -98,14 +98,14 @@ export async function addWaterIntake(amountMl: number) {
 
 
 // ✅ get today's intake (auto today)
-export async function getTodayWaterIntake() {
+export async function getTodayWaterIntake(selectedDayISO: string) {
   const { data: auth, error: authErr } = await supabase.auth.getUser();
   if (authErr) throw authErr;
 
   const user = auth.user;
   if (!user) throw new Error("No user");
 
-  const today = todayString();
+  const today = selectedDayISO;
 
   const { data, error } = await supabase
     .from("water_progress")
