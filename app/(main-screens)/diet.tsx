@@ -11,7 +11,11 @@ import Calendar from "@/components/Calendar";
 import AddFoodModal from "@/components/modals/AddFood/AddFoodModal";
 
 import { supabase } from "@/src/lib/supabase";
-import { deleteMealLog, fetchMealLogsForDay, MealLog } from "@/src/services/meals";
+import {
+  deleteMealLog,
+  fetchMealLogsForDay,
+  MealLog,
+} from "@/src/services/meals";
 import { groupMealLogs } from "@/src/services/mealGroup";
 import { getHomeSummary } from "@/src/services/mealSummary";
 
@@ -40,23 +44,22 @@ const Diet = () => {
   // -------------------------
   // Helpers (pure functions)
   // -------------------------
-  const getCurrentWeek = () => {
-    const today = new Date();
-    const currentDay = today.getDay(); // 0..6
-    const week: { date: number; fullDate: Date }[] = [];
+  // const getCurrentWeek = () => {
+  //   const today = new Date();
+  //   const currentDay = today.getDay(); // 0..6
+  //   const week: { date: number; fullDate: Date }[] = [];
 
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - currentDay + i);
-      week.push({ date: d.getDate(), fullDate: d });
-    }
-    return week;
-  };
+  //   for (let i = 0; i < 7; i++) {
+  //     const d = new Date(today);
+  //     d.setDate(today.getDate() - currentDay + i);
+  //     week.push({ date: d.getDate(), fullDate: d });
+  //   }
+  //   return week;
+  // };
 
   // -------------------------
   // Derived values
   // -------------------------
-  const weekDates = useMemo(() => getCurrentWeek(), []);
   const grouped = useMemo(() => groupMealLogs(logs), [logs]);
 
   const goalCalories = summary?.targets?.calories ?? 0;
@@ -68,13 +71,10 @@ const Diet = () => {
   // -------------------------
   // Handlers
   // -------------------------
-  const handleSelectDayNumber = (dayNum: number) => {
+  const handleSelectDayNumber = (dayNum: number, isoDate: string) => {
     setSelectedDateNumber(dayNum);
-
-    const match = weekDates.find((d) => d.date === dayNum);
-    if (!match) return;
-
-    setSelectedDayISO(match.fullDate.toISOString().slice(0, 10));
+    setSelectedDayISO(isoDate);
+    // console.log(selectedDateNumber);
   };
 
   const handleAddItem = (mealType: MealType) => {
@@ -84,9 +84,9 @@ const Diet = () => {
 
   const handleDelete = (logId: string | number) => {
     Alert.alert("Delete", "Are you sure?", [
-      {text: "Cancel", style: "cancel"},
+      { text: "Cancel", style: "cancel" },
       {
-        text:"Delete",
+        text: "Delete",
         style: "destructive",
         onPress: async () => {
           try {
@@ -97,13 +97,13 @@ const Diet = () => {
             await deleteMealLog(userId, logId);
 
             refreshDiet();
-          } catch(error) {
+          } catch (error) {
             console.log("delete meal log error", error);
           }
-        }
-      }
-    ])
-  }
+        },
+      },
+    ]);
+  };
 
   // -------------------------
   // Effects

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { ScrollView, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -43,18 +43,18 @@ const Home = () => {
   // -------------------------
   // Helpers (pure functions)
   // -------------------------
-  const getCurrentWeek = () => {
-    const today = new Date();
-    const currentDay = today.getDay(); // 0..6
-    const week: { date: number; fullDate: Date }[] = [];
+  // const getCurrentWeek = () => {
+  //   const today = new Date();
+  //   const currentDay = today.getDay(); // 0..6
+  //   const week: { date: number; fullDate: Date }[] = [];
 
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - currentDay + i);
-      week.push({ date: d.getDate(), fullDate: d });
-    }
-    return week;
-  };
+  //   for (let i = 0; i < 7; i++) {
+  //     const d = new Date(today);
+  //     d.setDate(today.getDate() - currentDay + i);
+  //     week.push({ date: d.getDate(), fullDate: d });
+  //   }
+  //   return week;
+  // };
 
   // -------------------------
   // Derived
@@ -80,9 +80,16 @@ const Home = () => {
   const lunchConsumed = Math.round(mealCals.Lunch ?? 0);
   const dinnerConsumed = Math.round(mealCals.Dinner ?? 0);
 
-  const weekDates = useMemo(() => getCurrentWeek(), []);
+  // -------------------------
+  // Handlers
+  // -------------------------
+  const handleSelectDayNumber = (dayNum: number, isoDate: string) => {
+    setSelectedDateNumber(dayNum);
+    setSelectedDayISO(isoDate);
+    // console.log(selectedDateNumber);
+  };
 
-  const refreshWater = async () => {
+  const handleOnclose = async () => {
     try {
       setWaterLoading(true);
       const [intake, target] = await Promise.all([
@@ -96,24 +103,8 @@ const Home = () => {
     } finally {
       setWaterLoading(false);
     }
-  };
-
-  // -------------------------
-  // Handlers
-  // -------------------------
-  const handleSelectDayNumber = (dayNum: number) => {
-    setSelectedDateNumber(dayNum);
-
-    const match = weekDates.find((d) => d.date === dayNum);
-    if (!match) return;
-
-    setSelectedDayISO(match.fullDate.toISOString().slice(0, 10));
-  };
-
-  const handleOnclose = () => {
-    refreshWater();
     setIsModalOpen(false);
-  }
+  };
   // -------------------------
   // Effects
   // -------------------------
@@ -134,7 +125,13 @@ const Home = () => {
           if (!alive) return;
 
           setSummary(daySummary);
-          refreshWater();
+          
+          const [intake, target] = await Promise.all([
+            getTodayWaterIntake(selectedDayISO),
+            getLatestWaterTarget(),
+          ]);
+          setDrinked(intake);
+          if (target) setWaterGoal(target);
         } catch (error) {
           console.log("Home screen:", error);
         } finally {
@@ -159,7 +156,6 @@ const Home = () => {
             <View className="w-full px-6 pt-6 flex-col gap-6">
               <HomeHeader userName={userName} gender={gender} />
 
-              {/* TODO: connect Calendar to selectedDayISO like Diet screen */}
               <Calendar
                 selectedDate={selectedDateNumber}
                 onSelectDate={handleSelectDayNumber}
@@ -197,10 +193,7 @@ const Home = () => {
           </ScrollView>
         </SafeAreaView>
 
-        <AddWaterModal
-          isOpen={isMoadlOpen}
-          onClose={handleOnclose}
-        />
+        <AddWaterModal isOpen={isMoadlOpen} onClose={handleOnclose} />
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
