@@ -3,14 +3,16 @@ import React from "react";
 import Steak from "../../assets/images/steak-91.svg";
 import { MealLog } from "@/src/services/meals";
 import MealLogRow from "./MealLogRow";
+import Loading from "../animations/Loading";
 
 type Props = {
   logs: MealLog[];
   onAddItem: () => void;
   onDelete: (id: string | number) => void;
+  loading: boolean;
 };
 
-const Dinner: React.FC<Props> = ({ logs, onAddItem, onDelete }) => {
+const Dinner: React.FC<Props> = ({ logs, onAddItem, onDelete, loading }) => {
   const totalCalories = logs.reduce((sum, item) => {
     return sum + (item.calories_snapshot ?? 0);
   }, 0);
@@ -25,7 +27,7 @@ const Dinner: React.FC<Props> = ({ logs, onAddItem, onDelete }) => {
                 Dinner
               </Text>
               <Text className="text-gray-500 font-light text-sm">
-                {totalCalories} cal{" "}
+                {totalCalories} kcal{" "}
               </Text>
             </View>
             <View>
@@ -35,18 +37,24 @@ const Dinner: React.FC<Props> = ({ logs, onAddItem, onDelete }) => {
 
           <View className="w-full gap-1">
             <View className="w-full border-b pb-2 border-gray-300 items-center">
-              {logs.length === 0 ? (
-                <Text className="text-gray-300 italic">No item log.</Text>
+              {loading ? (
+                <Loading />
               ) : (
-                <View className="gap-2">
-                  {logs.map((item) => (
-                    <MealLogRow
-                      key={item.id}
-                      item={item}
-                      onDeletePress={onDelete}
-                    />
-                  ))}
-                </View>
+                <>
+                  {logs.length === 0 ? (
+                    <Text className="text-gray-300 italic">No item log.</Text>
+                  ) : (
+                    <View className="gap-2">
+                      {logs.map((item) => (
+                        <MealLogRow
+                          key={item.id}
+                          item={item}
+                          onDeletePress={onDelete}
+                        />
+                      ))}
+                    </View>
+                  )}
+                </>
               )}
             </View>
             <Pressable className="items-center mt-2" onPress={onAddItem}>

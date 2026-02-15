@@ -1,17 +1,36 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, ActivityIndicator } from "react-native";
 import React from "react";
 import CalorieGauge from "./CalorieGauge";
 
 interface CaloriesCardProps {
   selectedDate?: number;
+  goalCalories: number;
+  consumedCalories: number;
+  goalProtein: number;
+  consumedProtein: number;
+  goalCarbs: number;
+  consumedCarbs: number;
+  goalFat: number;
+  consumedFat: number;
+  loading?: boolean;
 }
-const CaloriesCard: React.FC<CaloriesCardProps> = ({ selectedDate }) => {
-  //replace below with context api data
+const CaloriesCard: React.FC<CaloriesCardProps> = ({
+  selectedDate,
+  goalCalories,
+  consumedCalories,
+  goalProtein,
+  consumedProtein,
+  goalCarbs,
+  consumedCarbs,
+  goalFat,
+  consumedFat,
+  loading,
+}) => {
   const nutritionData = {
-    calories: { consumed: 1098, goal: 2217 },
-    protein: { consumed: 57, goal: 122 },
-    carbs: { consumed: 207, goal: 631 },
-    fat: { consumed: 4, goal: 18 },
+    calories: { consumed: consumedCalories, goal: goalCalories },
+    protein: { consumed: consumedProtein, goal: goalProtein },
+    carbs: { consumed: consumedCarbs, goal: goalCarbs },
+    fat: { consumed: consumedFat, goal: goalFat },
   };
 
   return (
@@ -19,11 +38,24 @@ const CaloriesCard: React.FC<CaloriesCardProps> = ({ selectedDate }) => {
       <Text className="text-xl font-bold text-blue-950 mb-4">Calories</Text>
 
       {/* Gauge will go here */}
-      <View className="items-center mb-2">
-        <CalorieGauge consumed={nutritionData.calories.consumed} goal={nutritionData.calories.goal} />
-      </View>
 
-      
+      {loading === true ? (
+        // <ActivityIndicator size="large" color="#0000ff" />
+        <View className="items-center mb-2">
+          <CalorieGauge
+            consumed={0}
+            goal={3000}
+          />
+        </View>
+      ) : (
+        <View className="items-center mb-2">
+          <CalorieGauge
+            consumed={nutritionData.calories.consumed}
+            goal={nutritionData.calories.goal}
+          />
+        </View>
+      )}
+
       <View className="flex-row justify-around w-full px-4">
         <View className="flex-row gap-2 items-center">
           <View>
@@ -45,8 +77,8 @@ const CaloriesCard: React.FC<CaloriesCardProps> = ({ selectedDate }) => {
         <View className="flex-row gap-2 items-center">
           <View>
             <Image
-              source={require("../../assets/images/fruit.png")}
-              className="w-8 h-6"
+              source={require("../../assets/images/icons8-fruit-100.png")}
+              className="w-10 h-10"
             />
           </View>
           <View>

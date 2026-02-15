@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, Alert } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -11,9 +11,14 @@ import Calendar from "@/components/Calendar";
 import AddFoodModal from "@/components/modals/AddFood/AddFoodModal";
 
 import { supabase } from "@/src/lib/supabase";
-import { deleteMealLog, fetchMealLogsForDay, MealLog } from "@/src/services/meals";
+import {
+  deleteMealLog,
+  fetchMealLogsForDay,
+  MealLog,
+} from "@/src/services/meals";
 import { groupMealLogs } from "@/src/services/mealGroup";
 import { getHomeSummary } from "@/src/services/mealSummary";
+import Loading from "@/components/animations/Loading";
 
 type MealType = "Breakfast" | "Lunch" | "Dinner";
 
@@ -31,50 +36,27 @@ const Diet = () => {
   const [logs, setLogs] = useState<MealLog[]>([]);
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   // Modal state
   const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
   const [selectedMeal, setSelectedMeal] = useState<MealType>("Breakfast");
 
   // -------------------------
-  // Helpers (pure functions)
-  // -------------------------
-  const getCurrentWeek = () => {
-    const today = new Date();
-    const currentDay = today.getDay(); // 0..6
-    const week: { date: number; fullDate: Date }[] = [];
-
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - currentDay + i);
-      week.push({ date: d.getDate(), fullDate: d });
-    }
-    return week;
-  };
-
-  // -------------------------
   // Derived values
   // -------------------------
-  const weekDates = useMemo(() => getCurrentWeek(), []);
   const grouped = useMemo(() => groupMealLogs(logs), [logs]);
 
   const goalCalories = summary?.targets?.calories ?? 0;
   const eatenCalories = summary?.eaten?.calories ?? 0;
   const remainingCalories = Math.max(0, goalCalories - eatenCalories);
 
-  const refreshDiet = () => setRefreshKey((x) => x + 1);
-
   // -------------------------
   // Handlers
   // -------------------------
-  const handleSelectDayNumber = (dayNum: number) => {
+  const handleSelectDayNumber = (dayNum: number, isoDate: string) => {
     setSelectedDateNumber(dayNum);
-
-    const match = weekDates.find((d) => d.date === dayNum);
-    if (!match) return;
-
-    setSelectedDayISO(match.fullDate.toISOString().slice(0, 10));
+    setSelectedDayISO(isoDate);
+    // console.log(selectedDateNumber);
   };
 
   const handleAddItem = (mealType: MealType) => {
@@ -84,9 +66,9 @@ const Diet = () => {
 
   const handleDelete = (logId: string | number) => {
     Alert.alert("Delete", "Are you sure?", [
-      {text: "Cancel", style: "cancel"},
+      { text: "Cancel", style: "cancel" },
       {
-        text:"Delete",
+        text: "Delete",
         style: "destructive",
         onPress: async () => {
           try {
@@ -95,50 +77,43 @@ const Diet = () => {
             if (!userId) return;
 
             await deleteMealLog(userId, logId);
-
-            refreshDiet();
-          } catch(error) {
+            mealLogsFetching();
+          } catch (error) {
             console.log("delete meal log error", error);
           }
-        }
-      }
-    ])
-  }
+        },
+      },
+    ]);
+  };
+
+  const mealLogsFetching = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      const userRes = await supabase.auth.getUser();
+      const userId = userRes.data.user?.id;
+      if (!userId) return;
+
+      const [dayLogs, daySummary] = await Promise.all([
+        fetchMealLogsForDay(userId, selectedDayISO),
+        getHomeSummary(userId, selectedDayISO),
+      ]);
+
+      setLogs(dayLogs);
+      setSummary(daySummary);
+    } catch (e) {
+      console.log("Diet load error:", e);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedDayISO]);
 
   // -------------------------
   // Effects
   // -------------------------
   useEffect(() => {
-    let alive = true;
-
-    (async () => {
-      try {
-        setLoading(true);
-
-        const userRes = await supabase.auth.getUser();
-        const userId = userRes.data.user?.id;
-        if (!userId) return;
-
-        const [dayLogs, daySummary] = await Promise.all([
-          fetchMealLogsForDay(userId, selectedDayISO),
-          getHomeSummary(userId, selectedDayISO),
-        ]);
-
-        if (!alive) return;
-
-        setLogs(dayLogs);
-        setSummary(daySummary);
-      } catch (e) {
-        console.log("Diet load error:", e);
-      } finally {
-        if (alive) setLoading(false);
-      }
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, [selectedDayISO, refreshKey]);
+    mealLogsFetching();
+  }, [mealLogsFetching]);
 
   // -------------------------
   // UI
@@ -167,28 +142,35 @@ const Diet = () => {
                 <Text className="text-lg text-blue-950 font-semibold mb-4">
                   Calories Remaining
                 </Text>
-                <View className="flex-row items-center justify-center gap-6">
-                  <View className="items-center">
-                    <Text className="text-gray-600 text-2xl font-semibold">
-                      {goalCalories.toFixed(0)}
-                    </Text>
-                    <Text className="text-gray-400 text-xs">Goal</Text>
+
+                {loading ? (
+                  <View className="w-full items-center">
+                    <Loading />
                   </View>
-                  <Text className="text-gray-400 text-xl">-</Text>
-                  <View className="items-center">
-                    <Text className="text-gray-600 text-2xl font-semibold">
-                      {eatenCalories.toFixed(0)}
-                    </Text>
-                    <Text className="text-gray-400 text-xs">Food</Text>
+                ) : (
+                  <View className="flex-row items-center justify-center gap-6">
+                    <View className="items-center">
+                      <Text className="text-gray-600 text-2xl font-semibold">
+                        {goalCalories.toFixed(0)}
+                      </Text>
+                      <Text className="text-gray-400 text-xs">Goal</Text>
+                    </View>
+                    <Text className="text-gray-400 text-xl">-</Text>
+                    <View className="items-center">
+                      <Text className="text-gray-600 text-2xl font-semibold">
+                        {eatenCalories.toFixed(0)}
+                      </Text>
+                      <Text className="text-gray-400 text-xs">Food</Text>
+                    </View>
+                    <Text className="text-gray-400 text-xl">=</Text>
+                    <View className="items-center">
+                      <Text className="text-blue-600 text-3xl font-bold">
+                        {remainingCalories.toFixed(0)}
+                      </Text>
+                      <Text className="text-gray-400 text-xs">Remaining</Text>
+                    </View>
                   </View>
-                  <Text className="text-gray-400 text-xl">=</Text>
-                  <View className="items-center">
-                    <Text className="text-blue-600 text-3xl font-bold">
-                      {remainingCalories.toFixed(0)}
-                    </Text>
-                    <Text className="text-gray-400 text-xs">Remaining</Text>
-                  </View>
-                </View>
+                )}
               </View>
 
               {/* Meals Section */}
@@ -197,16 +179,19 @@ const Diet = () => {
                   logs={grouped.Breakfast}
                   onAddItem={() => handleAddItem("Breakfast")}
                   onDelete={handleDelete}
+                  loading={loading}
                 />
                 <Lunch
                   logs={grouped.Lunch}
                   onAddItem={() => handleAddItem("Lunch")}
                   onDelete={handleDelete}
+                  loading={loading}
                 />
                 <Dinner
                   logs={grouped.Dinner}
                   onAddItem={() => handleAddItem("Dinner")}
                   onDelete={handleDelete}
+                  loading={loading}
                 />
               </View>
             </View>
@@ -219,7 +204,7 @@ const Diet = () => {
           mealType={selectedMeal}
           onClose={() => {
             setIsFoodModalOpen(false);
-            refreshDiet();
+            mealLogsFetching();
           }}
         />
       </BottomSheetModalProvider>

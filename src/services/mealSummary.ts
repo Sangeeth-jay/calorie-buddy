@@ -20,7 +20,7 @@ export async function getHomeSummary(userId: string, dayISO?: string) {
   // sum logs for that day
   const { data: rows, error: logsErr } = await supabase
     .from("meal_logs")
-    .select("calories_snapshot, protein_g_snapshot, carbs_g_snapshot, fat_g_snapshot")
+    .select("meal_type, calories_snapshot, protein_g_snapshot, carbs_g_snapshot, fat_g_snapshot")
     .eq("user_id", userId)
     .gte("logged_at", startISO)
     .lte("logged_at", endISO);
@@ -46,5 +46,14 @@ export async function getHomeSummary(userId: string, dayISO?: string) {
     water: Number(goal?.water_target_ml ?? 0),
   };
 
-  return { targets, eaten };
+  const mealCalories = (rows ?? []).reduce(
+    (acc, r) => {
+      const type = r.meal_type ?? "Other";
+      acc[type] = (acc[type] ?? 0) + Number(r.calories_snapshot ?? 0);
+      return acc;
+    },
+    {} as Record<string, number>
+  );
+
+  return { targets, eaten, mealCalories };
 }

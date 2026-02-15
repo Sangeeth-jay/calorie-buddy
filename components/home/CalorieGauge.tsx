@@ -89,7 +89,7 @@ const CalorieGauge: React.FC<CalorieGaugeProps> = ({ consumed, goal }) => {
         }}
       >
         <Image source={require("../../assets/images/calories.png")} className="w-10 h-10"/>
-        <Text style={{ fontSize: 40, fontWeight: "bold", color: `${consumed > goal ? "#ef4444" : "#1f2937"}` }}>
+        <Text style={{ fontSize: 40, fontWeight: "bold", color: `${Number(consumed) > Number(goal) ? "#ef4444" : "#1f2937"}` }}>
           {consumed}
           <Text style={{ fontSize: 14, fontWeight: "normal", color: "#6b7280" }}> kcal</Text>
         </Text>

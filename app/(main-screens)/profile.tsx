@@ -149,7 +149,7 @@ const Profile = () => {
               </View>
               <Text className="text-lg text-slate-700 font-semibold">
                 {loading ? "Loading..." : bundle?.goals.calorie_target}{" "}
-                <Text className="text-sm font-medium text-slate-400">cal</Text>
+                <Text className="text-sm font-medium text-slate-400">kcal</Text>
               </Text>
             </View>
 

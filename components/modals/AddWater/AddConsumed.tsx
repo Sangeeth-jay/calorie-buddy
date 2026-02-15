@@ -1,0 +1,84 @@
+import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import React, { useState } from "react";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
+
+import { addWaterIntake } from "@/src/services/waterService";
+
+type Props = {
+  waterTarget: number;
+  onClose: () => void;
+};
+
+const AddConsumed: React.FC<Props> = ({ waterTarget, onClose }) => {
+  const [text, setText] = useState("250");
+  const [saving, setSaving] = useState(false);
+
+  const quick = (ml: number) => setText(String(ml));
+
+  const add = async () => {
+    const ml = Number(text);
+    if (!Number.isFinite(ml) || ml <= 0) return;
+
+    try {
+      setSaving(true);
+      await addWaterIntake(ml);
+      onClose();
+    } catch (e) {
+      console.log("Add water intake error:", e);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <View className="items-center">
+      <View className="w-full items-center border-b pb-3 mb-4 border-gray-200">
+        <Text className="text-3xl font-semibold text-blue-600">Add Water</Text>
+        <Text className="text-gray-500 mt-1">Goal: {waterTarget} ml</Text>
+      </View>
+
+      <View className="w-full gap-3">
+        <View className="w-full items-center">
+          <View className="w-1/2 flex-row justify-center items-center bg-gray-100 rounded-lg px-4 py-2">
+            <BottomSheetTextInput
+              value={text}
+              onChangeText={(t) => setText(t.replace(/[^0-9]/g, ""))}
+              placeholder="250"
+              keyboardType="number-pad"
+              className="text-2xl w-5/6 text-right"
+            />
+            <Text className="text-xl w-1/6">ml</Text>
+          </View>
+        </View>
+
+        <View className="flex-row gap-2 justify-center">
+          {[100, 200, 250, 500].map((v) => (
+            <Pressable
+              key={v}
+              onPress={() => quick(v)}
+              className="px-4 py-2 bg-gray-100 rounded-xl border-blue-100 border"
+            >
+              <Text className="font-medium">{v}ml</Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <Pressable
+          disabled={saving}
+          onPress={add}
+          className={`w-1/2 self-center rounded-xl py-3 items-center ${
+            saving ? "bg-blue-300" : "bg-blue-500"
+          }`}
+        >
+          {saving ? (
+            <ActivityIndicator />
+          ) : (
+            <Text className="text-white text-lg font-semibold">Add</Text>
+          )}
+        </Pressable>
+      </View>
+    </View>
+  );
+};
+
+export default AddConsumed;
