@@ -1,4 +1,4 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, ActivityIndicator } from "react-native";
 import React from "react";
 import CalorieGauge from "./CalorieGauge";
 
@@ -12,9 +12,20 @@ interface CaloriesCardProps {
   consumedCarbs: number;
   goalFat: number;
   consumedFat: number;
+  loading?: boolean;
 }
-const CaloriesCard: React.FC<CaloriesCardProps> = ({ selectedDate, goalCalories, consumedCalories, goalProtein, consumedProtein, goalCarbs, consumedCarbs, goalFat, consumedFat }) => {
-  
+const CaloriesCard: React.FC<CaloriesCardProps> = ({
+  selectedDate,
+  goalCalories,
+  consumedCalories,
+  goalProtein,
+  consumedProtein,
+  goalCarbs,
+  consumedCarbs,
+  goalFat,
+  consumedFat,
+  loading,
+}) => {
   const nutritionData = {
     calories: { consumed: consumedCalories, goal: goalCalories },
     protein: { consumed: consumedProtein, goal: goalProtein },
@@ -27,11 +38,24 @@ const CaloriesCard: React.FC<CaloriesCardProps> = ({ selectedDate, goalCalories,
       <Text className="text-xl font-bold text-blue-950 mb-4">Calories</Text>
 
       {/* Gauge will go here */}
-      <View className="items-center mb-2">
-        <CalorieGauge consumed={nutritionData.calories.consumed} goal={nutritionData.calories.goal} />
-      </View>
 
-      
+      {loading === true ? (
+        // <ActivityIndicator size="large" color="#0000ff" />
+        <View className="items-center mb-2">
+          <CalorieGauge
+            consumed={0}
+            goal={3000}
+          />
+        </View>
+      ) : (
+        <View className="items-center mb-2">
+          <CalorieGauge
+            consumed={nutritionData.calories.consumed}
+            goal={nutritionData.calories.goal}
+          />
+        </View>
+      )}
+
       <View className="flex-row justify-around w-full px-4">
         <View className="flex-row gap-2 items-center">
           <View>

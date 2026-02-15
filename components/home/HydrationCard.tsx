@@ -11,7 +11,12 @@ type Props = {
   loading: boolean;
 };
 
-const HydrationCard: React.FC<Props> = ({onPress, drinked, waterGoal}) => {
+const HydrationCard: React.FC<Props> = ({
+  onPress,
+  drinked,
+  waterGoal,
+  loading,
+}) => {
   //below should add context api data
   const drink = drinked;
   const goal = waterGoal;
@@ -28,17 +33,26 @@ const HydrationCard: React.FC<Props> = ({onPress, drinked, waterGoal}) => {
     >
       <View className="flex gap-2 w-2/3">
         <Text className="text-xl font-semibold text-blue-950">Hydration</Text>
-        <View className="flex-row items-center gap-4">
-          <Text className="text-5xl font-semibold text-white">
-            {precentage}
+        {loading === true ? (
+          <View className="flex-row items-center gap-4">
+            <Text className="text-5xl font-semibold text-white">--</Text>
             <Text className="text-3xl text-blue-500 font-medium">%</Text>
-          </Text>
-          <View className="h-full border-r-2 border-r-white" />
-          <View className="">
-            <Text className="text-blue-500 font-medium">{drinked}ml</Text>
-            <Text className="text-blue-500 font-medium">of {waterGoal}ml</Text>
           </View>
-        </View>
+        ) : (
+          <View className="flex-row items-center gap-4">
+            <Text className="text-5xl font-semibold text-white">
+              {precentage}
+              <Text className="text-3xl text-blue-500 font-medium">%</Text>
+            </Text>
+            <View className="h-full border-r-2 border-r-white" />
+            <View className="">
+              <Text className="text-blue-500 font-medium">{drinked}ml</Text>
+              <Text className="text-blue-500 font-medium">
+                of {waterGoal}ml
+              </Text>
+            </View>
+          </View>
+        )}
 
         <Svg height="10" width="100%">
           <Line

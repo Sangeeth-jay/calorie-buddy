@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { ScrollView, View, Text } from "react-native";
+import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Calendar from "@/components/Calendar";
@@ -38,23 +38,6 @@ const Home = () => {
 
   const [drinked, setDrinked] = useState(0);
   const [waterGoal, setWaterGoal] = useState(3500);
-  const [waterLoading, setWaterLoading] = useState(true);
-
-  // -------------------------
-  // Helpers (pure functions)
-  // -------------------------
-  // const getCurrentWeek = () => {
-  //   const today = new Date();
-  //   const currentDay = today.getDay(); // 0..6
-  //   const week: { date: number; fullDate: Date }[] = [];
-
-  //   for (let i = 0; i < 7; i++) {
-  //     const d = new Date(today);
-  //     d.setDate(today.getDate() - currentDay + i);
-  //     week.push({ date: d.getDate(), fullDate: d });
-  //   }
-  //   return week;
-  // };
 
   // -------------------------
   // Derived
@@ -91,7 +74,6 @@ const Home = () => {
 
   const handleOnclose = async () => {
     try {
-      setWaterLoading(true);
       const [intake, target] = await Promise.all([
         getTodayWaterIntake(selectedDayISO),
         getLatestWaterTarget(),
@@ -100,9 +82,7 @@ const Home = () => {
       if (target) setWaterGoal(target);
     } catch (e) {
       console.log("refreshWater error:", e);
-    } finally {
-      setWaterLoading(false);
-    }
+    } 
     setIsModalOpen(false);
   };
   // -------------------------
@@ -125,7 +105,7 @@ const Home = () => {
           if (!alive) return;
 
           setSummary(daySummary);
-          
+
           const [intake, target] = await Promise.all([
             getTodayWaterIntake(selectedDayISO),
             getLatestWaterTarget(),
@@ -135,7 +115,9 @@ const Home = () => {
         } catch (error) {
           console.log("Home screen:", error);
         } finally {
-          if (alive) setLoading(false);
+          if (alive) {
+            setLoading(false);
+          }
         }
       })();
 
@@ -153,7 +135,7 @@ const Home = () => {
       <BottomSheetModalProvider>
         <SafeAreaView className="w-full">
           <ScrollView className="w-full" showsVerticalScrollIndicator={false}>
-            <View className="w-full px-6 pt-6 flex-col gap-6">
+            <View className="w-full px-6 pt-6 flex-col gap-6 ">
               <HomeHeader userName={userName} gender={gender} />
 
               <Calendar
@@ -172,23 +154,25 @@ const Home = () => {
                 consumedCarbs={consumedCarbs}
                 goalFat={goalFat}
                 consumedFat={consumedFat}
+                loading={loading}
               />
 
               <HydrationCard
                 drinked={drinked}
                 waterGoal={waterGoal}
                 onPress={() => setIsModalOpen(true)}
-                loading={waterLoading}
-              />
-              <MealSummary
-                breakfast={{ goal: breakfastGoal, consumed: breakfastConsumed }}
-                lunch={{ goal: lunchGoal, consumed: lunchConsumed }}
-                dinner={{ goal: dinnerGoal, consumed: dinnerConsumed }}
+                loading={loading}
               />
 
-              {loading && (
-                <Text className="text-xs text-gray-400">Loading...</Text>
-              )}
+              <MealSummary
+                breakfast={{
+                  goal: breakfastGoal,
+                  consumed: breakfastConsumed,
+                }}
+                lunch={{ goal: lunchGoal, consumed: lunchConsumed }}
+                dinner={{ goal: dinnerGoal, consumed: dinnerConsumed }}
+                loading={loading}
+              />
             </View>
           </ScrollView>
         </SafeAreaView>
