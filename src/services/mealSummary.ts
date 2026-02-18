@@ -57,3 +57,53 @@ export async function getHomeSummary(userId: string, dayISO?: string) {
 
   return { targets, eaten, mealCalories };
 }
+
+
+export async function getMacrosByDateRange(startDate: Date, endDate: Date) {
+
+  const { data: auth, error: authErr } = await supabase.auth.getUser();
+  if (authErr) throw authErr;
+  const user = auth.user;
+  if (!user) throw new Error("No user");
+
+  const formatDate = (date: Date) => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const startDateStr = formatDate(startDate);
+  const endDateStr = formatDate(endDate);
+
+  const { data, error } = await supabase
+    .from("meal_logs")
+    .select("logged_at, protein_g_snapshot, carbs_g_snapshot, fat_g_snapshot")
+    .eq("user_id", user.id)
+    .gte("logged_at", `${startDateStr}T00:00:00`)
+    .lte("logged_at", `${endDateStr}T23:59:59`)
+    .order("logged_at", { ascending: true });
+
+  if (error) throw error;
+
+  //group returned data
+  const grouped = (data ?? []).reduce((acc, row) => {
+    const date = row.logged_at.split('T')[0];
+
+    // Initialize if first meal of this day
+    if (!acc[date]) {
+      acc[date] = { date, protein: 0, carbs: 0, fat: 0 };
+    }
+
+    // Add this meal's macros to the day's total
+    acc[date].protein += Number(row.protein_g_snapshot ?? 0);
+    acc[date].carbs += Number(row.carbs_g_snapshot ?? 0);
+    acc[date].fat += Number(row.fat_g_snapshot ?? 0);
+
+    return acc;
+  }, {} as Record<string, { date: string; protein: number; carbs: number; fat: number }>);
+
+  // Convert object to array
+  return Object.values(grouped);
+
+}

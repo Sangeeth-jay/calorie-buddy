@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Dimensions, ScrollView } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CaretRightIcon, CaretLeftIcon } from "phosphor-react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -18,10 +18,18 @@ import {
 } from "@/src/utils/dateRangeHelpers";
 import { getWaterIntakeByDateRange } from "@/src/services/waterService";
 import { useFocusEffect } from "@react-navigation/native";
+import { getMacrosByDateRange } from "@/src/services/mealSummary";
 
 type ChartDataPoint = {
   value: number;
   label: string;
+};
+
+type MacroDataPoint = {
+  day: string;
+  carbs: number;
+  protein: number;
+  fat: number;
 };
 
 const Progress = () => {
@@ -40,16 +48,54 @@ const Progress = () => {
   const selectedPeriod = periods[selectedPeriodIndex];
   //weight modal state
   const [isWeightModalOpen, setIsWeightModalOpen] = useState(false);
-  const [hydrationData, setHydrationData] = useState<
-    { value: number; label: string }[]
-  >([]);
+  const [hydrationData, setHydrationData] = useState<ChartDataPoint[]>([]);
+  const [macroData, setMacroData] = useState<MacroDataPoint[]>([]);
 
   // -------------------------
   // handlers
   // -------------------------
 
-  const fetchHydration = async () => {
+  const fetchMacros = async () => {
+    let alive = true;
+    try {
+      setLoading(true);
 
+      const { startDate, endDate } =
+        selectedPeriod === "Week" ? getWeekRange() : getMonthRange();
+
+      const rawData = await getMacrosByDateRange(startDate, endDate);
+
+      const totalDays = selectedPeriod === "Week" ? 7 : 30;
+      const transformed: MacroDataPoint[] = [];
+
+      for(let i = 0; i < totalDays; i++) {
+        const day = new Date(startDate);
+        day.setDate(startDate.getDate() + i);
+
+        const dayStr = formatToLocalDateStr(day);
+
+        const match = rawData.find((entry) => entry.date === dayStr);
+        
+        transformed.push({
+          day: selectedPeriod === "Week" ? formatDayLable(day) : formatDateLabel(day),
+          carbs: match?.carbs ?? 0,
+          protein: match?.protein ?? 0,
+          fat: match?.fat ?? 0,
+        });
+      }
+
+      setMacroData(transformed);
+
+    } catch (error) {
+      console.log("Macros fetching error : ", error);
+    } finally {
+      if (alive) {
+        setLoading(false);
+      }
+    }
+  };
+
+  const fetchHydration = async () => {
     let alive = true;
 
     try {
@@ -119,20 +165,10 @@ const Progress = () => {
   useFocusEffect(
     useCallback(() => {
       fetchHydration();
+      fetchMacros();
     }, [selectedPeriod]),
   );
-  // Macro Intakes data
-  const macroData = [
-    { day: "Mon", carbs: 250, protein: 100, fat: 60 },
-    { day: "Tue", carbs: 280, protein: 110, fat: 65 },
-    { day: "Wed", carbs: 260, protein: 105, fat: 58 },
-    { day: "Thu", carbs: 270, protein: 100, fat: 62 },
-    { day: "Fri", carbs: 255, protein: 95, fat: 60 },
-    { day: "Sat", carbs: 265, protein: 105, fat: 64 },
-    { day: "Sun", carbs: 275, protein: 98, fat: 61 },
-  ];
-
-  // ];
+  
   // Weight data - actual recorded weight
   const actualWeightData = [
     { value: 82, label: "12/07" },
@@ -171,7 +207,11 @@ const Progress = () => {
           <ScrollView>
             <View className="flex-1 gap-4 px-6 py-10">
               {/* Macro Intakes Section */}
-              <MacroIntakesCard data={macroData} chartWidth={chartWidth} />
+              <MacroIntakesCard
+              key={`macro-${selectedPeriod}-${hydrationData.length}`}
+              data={macroData} chartWidth={chartWidth} 
+              isMonthView={selectedPeriod === "Month"} 
+              loading={loading}/>
               {/* Hydration Section */}
               <HydrationCard
                 key={`hydration-${selectedPeriod}-${hydrationData.length}`}

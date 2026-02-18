@@ -1,6 +1,7 @@
 import { View, Text } from "react-native";
 import React from "react";
 import { BarChart } from "react-native-gifted-charts";
+import Loading from "../animations/Loading";
 
 interface MacroData {
   day: string;
@@ -13,12 +14,16 @@ interface MacroIntakesCardProps {
   data: MacroData[];
   chartWidth: number;
   height?: number;
+  isMonthView?: boolean;
+  loading?: boolean;
 }
 
 const MacroIntakesCard: React.FC<MacroIntakesCardProps> = ({
   data,
   chartWidth,
   height = 180,
+  isMonthView = false,
+  loading,
 }) => {
   // Transform data for grouped bar chart
   const chartData = data.flatMap((day) => [
@@ -72,7 +77,13 @@ const MacroIntakesCard: React.FC<MacroIntakesCardProps> = ({
             showGradient={false}
             isAnimated
             animationDuration={800}
+            
           />
+          {loading && (
+            <View className="w-full h-full absolute top-0 left-0 items-center justify-center">
+              <Loading />
+            </View>
+          )}
         </View>
         {/* Legend */}
         <View className="flex-row justify-center gap-4 mt-3">
