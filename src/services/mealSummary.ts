@@ -1,6 +1,6 @@
 // src/services/mealSummary.ts
 import { supabase } from "@/src/lib/supabase";
-import { getDayRangeISO } from "@/src/utils/dateRange";
+import { getDayRangeISO } from "@/src/utils/dayRange";
 
 export async function getHomeSummary(userId: string, dayISO?: string) {
   const { startISO, endISO } = getDayRangeISO(dayISO);
