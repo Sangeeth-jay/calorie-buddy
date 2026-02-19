@@ -1,6 +1,7 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text } from "react-native";
 import React from "react";
 import { LineChart } from "react-native-gifted-charts";
+import Loading from "../animations/Loading";
 
 interface WeightData {
   value: number;
@@ -9,23 +10,23 @@ interface WeightData {
 
 interface WeightCardProps {
   actualData: WeightData[];
-  targetData: WeightData[];
+  // targetData: WeightData[];
   chartWidth: number;
-  onAddPress?: () => void;
   height?: number;
+  loading?: boolean;
 }
 
 const WeightCard: React.FC<WeightCardProps> = ({
   actualData,
-  targetData,
+  // targetData,
   chartWidth,
-  onAddPress,
   height = 80,
+  loading,
 }) => {
   // Calculate dynamic weight range
   const allWeights = [
     ...actualData.map((d) => d.value),
-    ...targetData.map((d) => d.value),
+    // ...targetData.map((d) => d.value),
   ];
   const minWeight = Math.min(...allWeights);
   const maxWeight = Math.max(...allWeights);
@@ -43,20 +44,20 @@ const WeightCard: React.FC<WeightCardProps> = ({
       <View className="bg-white rounded-2xl py-4">
         <View className="flex-row justify-between items-center mb-3 px-4">
           <Text className="text-lg font-semibold text-gray-800">Weight</Text>
-          {onAddPress && (
+          {/* {onAddPress && (
             <Pressable
               onPress={onAddPress}
               className="w-8 h-8 bg-blue-500 rounded-full items-center justify-center"
             >
               <Text className="text-white text-xl font-bold">+</Text>
             </Pressable>
-          )}
+          )} */}
         </View>
 
         <View className="mb-3">
           <LineChart
             data={actualData}
-            data2={targetData}
+            // data2={targetData}
             height={height}
             width={chartWidth}
             yAxisOffset={yAxisOffset}
@@ -88,6 +89,11 @@ const WeightCard: React.FC<WeightCardProps> = ({
             isAnimated
             animationDuration={800}
           />
+          {loading && (
+            <View className="w-full h-full absolute top-0 left-0 items-center justify-center">
+              <Loading />
+            </View>
+          )}
         </View>
 
         {/* Legend */}
