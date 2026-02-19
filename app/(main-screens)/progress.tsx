@@ -8,7 +8,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import HydrationCard from "../../components/progress/HydrationCard";
 import WeightCard from "../../components/progress/WeightCard";
 import MacroIntakesCard from "../../components/progress/MacroIntakesCard";
-import AddWeightModal from "../../components/modals/AddWeightModal";
+import AddWeightModal from "../../components/modals/AddWeight/AddWeightModal";
 import {
   formatDateLabel,
   formatDayLable,
