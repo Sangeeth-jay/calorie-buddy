@@ -123,3 +123,38 @@ export async function getLatestWaterTarget() {
   const latest = await getLatestDailyGoal();
   return latest?.water_target_ml ?? null;
 }
+
+
+//water intake data
+
+export async function getWaterIntakeByDateRange(startDate: Date,
+  endDate: Date
+) {
+  const {data: auth, error: authErr} = await supabase.auth.getUser();
+  if(authErr) throw authErr;
+  const user = auth.user;
+  if(!user) throw new Error("No User");
+
+  const formatDate = (date: Date) => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth()+1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const startDateStr = formatDate(startDate);
+  const endDateStr = formatDate(endDate);
+
+  const {data, error} = await supabase
+    .from("water_progress")
+    .select("logged_on, intake_ml")
+    .eq("user_id", user.id)
+    .gte("logged_on", startDateStr) 
+    .lte("logged_on", endDateStr)
+    .order("logged_on", { ascending: true });
+
+  if(error) throw error;
+
+  return data ?? [];
+}
