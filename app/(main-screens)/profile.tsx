@@ -86,7 +86,6 @@ const Profile = () => {
 
   const handleOnClose = () => {
     setIsModalOpen(false);
-    console.log("Modal closed");
   };
 
   // -------------------------
