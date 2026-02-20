@@ -160,6 +160,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
       onChange={handleSheetChanges}
       backdropComponent={renderBackdrop}
       enablePanDownToClose
+      enableContentPanningGesture={false}
       snapPoints={["90%"]}
       handleStyle={{
         backgroundColor: "#3b82f6",

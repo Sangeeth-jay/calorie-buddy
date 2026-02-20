@@ -1,6 +1,6 @@
-import { View, Text, Pressable, ScrollView } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import React from "react";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
+import { BottomSheetTextInput, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import {
   MagnifyingGlassIcon,
   BarcodeIcon,
@@ -58,10 +58,11 @@ const FoodSearchView: React.FC<Props> = ({ query, setQuery, status, result, onPi
 
           {/* Results */}
           {status === "success" && result.length > 0 && (
-            <ScrollView
+            <BottomSheetScrollView
               className="mt-2 w-full"
               contentContainerClassName="px-4 pb-6"
               showsVerticalScrollIndicator={false}
+              bounces={false}
               style={{ maxHeight: result.length > 4 ? 320 : undefined }}
             >
               {result.map((item) => (
@@ -82,7 +83,7 @@ const FoodSearchView: React.FC<Props> = ({ query, setQuery, status, result, onPi
                   </View>
                 </Pressable>
               ))}
-            </ScrollView>
+            </BottomSheetScrollView>
           )}
 
           {/* Empty */}
