@@ -38,45 +38,6 @@ export const formatDateLabel = (date: Date): string => {
 };
 
 
-// ==================== TESTING HELPERS ====================
-
-/**
- * Test function to verify date ranges (remove after testing)
- */
-export const testDateRanges = () => {
-  console.log('📅 WEEK RANGE (Last 7 days):');
-  const { startDate: weekStart, endDate: weekEnd } = getWeekRange();
-  console.log('Start:', weekStart.toLocaleDateString());
-  console.log('End:', weekEnd.toLocaleDateString());
-
-  // Show all 7 days with labels
-  console.log('\nWeek days:');
-  for (let i = 0; i < 7; i++) {
-    const day = new Date(weekStart);
-    day.setDate(weekStart.getDate() + i);
-    console.log(`${formatDayLable(day)} - ${formatDateLabel(day)}`);
-  }
-
-  console.log('\n📅 MONTH RANGE (Last 30 days):');
-  const { startDate: monthStart, endDate: monthEnd } = getMonthRange();
-  console.log('Start:', monthStart.toLocaleDateString());
-  console.log('End:', monthEnd.toLocaleDateString());
-
-  // Show first 5 and last 5 days
-  console.log('\nFirst 5 days:');
-  for (let i = 0; i < 5; i++) {
-    const day = new Date(monthStart);
-    day.setDate(monthStart.getDate() + i);
-    console.log(formatDateLabel(day));
-  }
-  console.log('...');
-  console.log('Last 5 days:');
-  for (let i = 25; i < 30; i++) {
-    const day = new Date(monthStart);
-    day.setDate(monthStart.getDate() + i);
-    console.log(formatDateLabel(day));
-  }
-};
 
 export const formatToLocalDateStr = (date: Date): string => {
   const yyyy = date.getFullYear();

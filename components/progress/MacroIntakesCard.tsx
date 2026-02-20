@@ -140,7 +140,7 @@ const MacroIntakesCard: React.FC<MacroIntakesCardProps> = ({
                   }}
                 />
                 <Text style={{ fontSize: 11 }}>
-                  Carbs: {selectedDate.carbs}g
+                  Carbs: {selectedDate.carbs.toFixed(1)}g
                 </Text>
               </View>
 
@@ -160,7 +160,7 @@ const MacroIntakesCard: React.FC<MacroIntakesCardProps> = ({
                   }}
                 />
                 <Text style={{ fontSize: 11 }}>
-                  Protein: {selectedDate.protein}g
+                  Protein: {selectedDate.protein.toFixed(1)}g
                 </Text>
               </View>
 
@@ -179,7 +179,7 @@ const MacroIntakesCard: React.FC<MacroIntakesCardProps> = ({
                     marginRight: 6,
                   }}
                 />
-                <Text style={{ fontSize: 11 }}>Fat: {selectedDate.fat}g</Text>
+                <Text style={{ fontSize: 11 }}>Fat: {selectedDate.fat.toFixed(1)}g</Text>
               </View>
             </View>
           )}

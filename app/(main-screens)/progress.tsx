@@ -19,6 +19,7 @@ import {
 import { getWaterIntakeByDateRange } from "@/src/services/waterService";
 import { useFocusEffect } from "@react-navigation/native";
 import { getMacrosByDateRange } from "@/src/services/mealSummary";
+import { getWeightProgress } from "@/src/services/weightService";
 
 type ChartDataPoint = {
   value: number;
@@ -50,13 +51,15 @@ const Progress = () => {
   const [isWeightModalOpen, setIsWeightModalOpen] = useState(false);
   const [hydrationData, setHydrationData] = useState<ChartDataPoint[]>([]);
   const [macroData, setMacroData] = useState<MacroDataPoint[]>([]);
+  const [actualWeightData, setActualWeightData] = useState<ChartDataPoint[]>(
+    [],
+  );
 
   // -------------------------
   // handlers
   // -------------------------
 
   const fetchMacros = async () => {
-    let alive = true;
     try {
       setLoading(true);
 
@@ -68,16 +71,19 @@ const Progress = () => {
       const totalDays = selectedPeriod === "Week" ? 7 : 30;
       const transformed: MacroDataPoint[] = [];
 
-      for(let i = 0; i < totalDays; i++) {
+      for (let i = 0; i < totalDays; i++) {
         const day = new Date(startDate);
         day.setDate(startDate.getDate() + i);
 
         const dayStr = formatToLocalDateStr(day);
 
         const match = rawData.find((entry) => entry.date === dayStr);
-        
+
         transformed.push({
-          day: selectedPeriod === "Week" ? formatDayLable(day) : formatDateLabel(day),
+          day:
+            selectedPeriod === "Week"
+              ? formatDayLable(day)
+              : formatDateLabel(day),
           carbs: match?.carbs ?? 0,
           protein: match?.protein ?? 0,
           fat: match?.fat ?? 0,
@@ -85,19 +91,14 @@ const Progress = () => {
       }
 
       setMacroData(transformed);
-
     } catch (error) {
       console.log("Macros fetching error : ", error);
     } finally {
-      if (alive) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   };
 
   const fetchHydration = async () => {
-    let alive = true;
-
     try {
       setLoading(true);
       const { startDate, endDate } =
@@ -125,17 +126,52 @@ const Progress = () => {
         });
       }
 
-      if (alive) {
-        setLoading(false);
-      }
+      setLoading(false);
 
       setHydrationData(transformed);
     } catch (error) {
       console.log("Hydration data fetching error:", error);
     } finally {
-      if (alive) {
-        setLoading(false);
+      setLoading(false);
+    }
+  };
+
+  const fetchWeight = async () => {
+    try {
+      setLoading(true);
+      const { startDate, endDate } =
+        selectedPeriod === "Week" ? getWeekRange() : getMonthRange();
+
+      const rawData = await getWeightProgress(startDate, endDate);
+
+      const totalDays = selectedPeriod === "Week" ? 7 : 30;
+      const transformed: ChartDataPoint[] = [];
+
+      for (let i = 0; i < totalDays; i++) {
+        const day = new Date(startDate);
+        day.setDate(startDate.getDate() + i);
+
+        const dayStr = formatToLocalDateStr(day);
+        const match = rawData.find((entry) => entry.logged_on === dayStr);
+
+        if (match) {
+          transformed.push({
+            value: match.weight_kg,
+            label:
+              selectedPeriod === "Week"
+                ? formatDayLable(day)
+                : formatDateLabel(day),
+          });
+        }
       }
+
+      setLoading(false);
+
+      setActualWeightData(transformed);
+    } catch (error) {
+      console.log("Weight data fetching error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -152,12 +188,6 @@ const Progress = () => {
     );
   };
 
-  // Handle saving weight entry
-  const handleSaveWeight = (data: { weight: number; date: Date }) => {
-    console.log("Weight saved:", data);
-    // TODO: Save to context/backend later
-  };
-
   // -------------------------
   // effects
   // -------------------------
@@ -166,24 +196,11 @@ const Progress = () => {
     useCallback(() => {
       fetchHydration();
       fetchMacros();
+      fetchWeight();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedPeriod]),
   );
-  
-  // Weight data - actual recorded weight
-  const actualWeightData = [
-    { value: 82, label: "12/07" },
-    { value: 81.5, label: "11/08" },
-    { value: 81, label: "10/09" },
-    { value: 82, label: "10/10" },
-  ];
 
-  // Weight data - system calculated target
-  const targetWeightData = [
-    { value: 82, label: "12/07" },
-    { value: 81.7, label: "11/08" },
-    { value: 81.4, label: "10/09" },
-    { value: 81.1, label: "10/10" },
-  ];
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -208,10 +225,12 @@ const Progress = () => {
             <View className="flex-1 gap-4 px-6 py-10">
               {/* Macro Intakes Section */}
               <MacroIntakesCard
-              key={`macro-${selectedPeriod}-${hydrationData.length}`}
-              data={macroData} chartWidth={chartWidth} 
-              isMonthView={selectedPeriod === "Month"} 
-              loading={loading}/>
+                key={`macro-${selectedPeriod}-${hydrationData.length}`}
+                data={macroData}
+                chartWidth={chartWidth}
+                isMonthView={selectedPeriod === "Month"}
+                loading={loading}
+              />
               {/* Hydration Section */}
               <HydrationCard
                 key={`hydration-${selectedPeriod}-${hydrationData.length}`}
@@ -223,10 +242,10 @@ const Progress = () => {
 
               {/* Weight Section */}
               <WeightCard
+                key={`weight-${selectedPeriod}-${hydrationData.length}`}
                 actualData={actualWeightData}
-                targetData={targetWeightData}
                 chartWidth={chartWidth}
-                onAddPress={() => setIsWeightModalOpen(true)}
+                loading={loading}
               />
             </View>
           </ScrollView>
@@ -234,7 +253,6 @@ const Progress = () => {
         <AddWeightModal
           isOpen={isWeightModalOpen}
           onClose={() => setIsWeightModalOpen(false)}
-          onSave={handleSaveWeight}
         />
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
