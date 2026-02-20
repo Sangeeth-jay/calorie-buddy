@@ -24,10 +24,7 @@ const WeightCard: React.FC<WeightCardProps> = ({
   loading,
 }) => {
   // Calculate dynamic weight range
-  const allWeights = [
-    ...actualData.map((d) => d.value),
-    // ...targetData.map((d) => d.value),
-  ];
+  const allWeights = [...actualData.map((d) => d.value)];
   const minWeight = Math.min(...allWeights);
   const maxWeight = Math.max(...allWeights);
 
@@ -44,14 +41,6 @@ const WeightCard: React.FC<WeightCardProps> = ({
       <View className="bg-white rounded-2xl py-4">
         <View className="flex-row justify-between items-center mb-3 px-4">
           <Text className="text-lg font-semibold text-gray-800">Weight</Text>
-          {/* {onAddPress && (
-            <Pressable
-              onPress={onAddPress}
-              className="w-8 h-8 bg-blue-500 rounded-full items-center justify-center"
-            >
-              <Text className="text-white text-xl font-bold">+</Text>
-            </Pressable>
-          )} */}
         </View>
 
         <View className="mb-3">
@@ -88,24 +77,47 @@ const WeightCard: React.FC<WeightCardProps> = ({
             xAxisThickness={1}
             isAnimated
             animationDuration={800}
+            pointerConfig={{
+              pointerStripHeight: height ,
+              pointerStripColor: "#ef4444",
+              pointerStripWidth: 0.5,
+              pointerColor: "#ef4444",
+              radius: 6,
+              pointerLabelWidth: 50,
+              pointerLabelHeight: height,
+              activatePointersOnLongPress: false,
+              autoAdjustPointerLabelPosition: true,
+              pointerLabelComponent: (items: any) => {
+                return (
+                  <View
+                    style={{
+                      paddingHorizontal: 4,
+                      paddingVertical: 2,
+                      borderRadius: 16,
+                      backgroundColor: "#ef4444",
+                      width: 70,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        color: "white",
+                        fontSize: 12,
+                      }}
+                    >
+                      {items[0].value.toFixed(2)}kg
+                    </Text>
+                  </View>
+                );
+              },
+            }}
           />
           {loading && (
             <View className="w-full h-full absolute top-0 left-0 items-center justify-center">
               <Loading />
             </View>
           )}
-        </View>
-
-        {/* Legend */}
-        <View className="flex-row justify-center gap-4 px-4">
-          <View className="flex-row items-center gap-1">
-            <View className="w-3 h-0.5 bg-red-500" />
-            <Text className="text-xs text-gray-600">Actual</Text>
-          </View>
-          <View className="flex-row items-center gap-1">
-            <View className="w-3 h-0.5 bg-blue-500" />
-            <Text className="text-xs text-gray-600">Target</Text>
-          </View>
         </View>
       </View>
     </View>

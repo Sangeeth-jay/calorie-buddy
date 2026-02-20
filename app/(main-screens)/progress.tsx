@@ -200,13 +200,6 @@ const Progress = () => {
     }, [selectedPeriod]),
   );
 
-  // Weight data - system calculated target
-  const targetWeightData = [
-    { value: 82, label: "12/07" },
-    { value: 81.7, label: "11/08" },
-    { value: 81.4, label: "10/09" },
-    { value: 81.1, label: "10/10" },
-  ];
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -250,7 +243,6 @@ const Progress = () => {
               <WeightCard
                 key={`weight-${selectedPeriod}-${hydrationData.length}`}
                 actualData={actualWeightData}
-                // targetData={targetWeightData}
                 chartWidth={chartWidth}
                 loading={loading}
               />
