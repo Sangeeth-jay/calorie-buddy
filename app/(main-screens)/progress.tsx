@@ -197,6 +197,7 @@ const Progress = () => {
       fetchHydration();
       fetchMacros();
       fetchWeight();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedPeriod]),
   );
 
