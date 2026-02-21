@@ -17,6 +17,7 @@ import { ArrowSquareOutIcon, CaretRightIcon } from "phosphor-react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import AddWeightModal from "@/components/modals/AddWeight/AddWeightModal";
+import UpdateGoal from "@/components/modals/UpdateGoal/UpdateGoal";
 
 const goalType: Record<string, string> = {
   lose_weight: "Lose weight",
@@ -53,6 +54,7 @@ const Profile = () => {
     goals: any;
   } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
 
   // -------------------------
   // handlers
@@ -86,6 +88,10 @@ const Profile = () => {
 
   const handleOnClose = () => {
     setIsModalOpen(false);
+  };
+
+  const handleGoalOnClose = () => {
+    setIsGoalModalOpen(false);
   };
 
   // -------------------------
@@ -235,7 +241,12 @@ const Profile = () => {
                   </Text>
                 </View>
 
-                <Pressable className="flex-row items-center justify-between w-full pt-2">
+                <Pressable
+                  onPress={() => {
+                    setIsGoalModalOpen(true);
+                  }}
+                  className="flex-row items-center justify-between w-full pt-2"
+                >
                   <Text className="text-base text-slate-500">
                     Need to change Goal?
                   </Text>
@@ -348,6 +359,7 @@ const Profile = () => {
         </SafeAreaView>
 
         <AddWeightModal isOpen={isModalOpen} onClose={handleOnClose} />
+        <UpdateGoal isOpen={isGoalModalOpen} onClose={handleGoalOnClose} />
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
