@@ -27,9 +27,9 @@ export function calculateGoalPlan(input: GoalPlanInput): GoalPlanResult {
         calorieTarget = input.tdee - 750;
         if (calorieTarget < 1500) calorieTarget = 1500;
     } else if (input.goalType === "gain_muscle") {
-        calorieTarget = input.tdee + 250;
+        calorieTarget = input.tdee;
     } else if (input.goalType === "gain_weight") {
-        calorieTarget = input.tdee + 300;
+        calorieTarget = input.tdee + 500;
     }
     else {
         calorieTarget = input.tdee;

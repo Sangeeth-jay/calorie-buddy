@@ -6,6 +6,8 @@ import {
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import GoalCard from "@/components/cards/GoalCard";
+import { updateUserGoal } from "@/src/services/goalService";
+import { GoalType } from "@/src/utils/goalPlan";
 
 interface UpdateGoalModalProps {
   isOpen: boolean;
@@ -25,6 +27,8 @@ const UpdateGoal: React.FC<UpdateGoalModalProps> = ({ isOpen, onClose }) => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+
   useEffect(() => {
     if (isOpen) {
       bottomSheetRef.current?.present();
@@ -32,6 +36,22 @@ const UpdateGoal: React.FC<UpdateGoalModalProps> = ({ isOpen, onClose }) => {
       bottomSheetRef.current?.dismiss();
     }
   }, [isOpen]);
+
+
+  const handleSave = async () => {
+    if(!selectedGoal) return;
+
+    setIsLoading(true);
+    try {
+      await updateUserGoal(selectedGoal as GoalType);
+      onClose();
+    } catch(error) {
+      console.log("update goal error : ", error);
+    } finally{
+      setIsLoading(false);
+    }
+  }
+
 
   const handleSheetChanges = useCallback(
     (index: number) => {
@@ -116,6 +136,7 @@ const UpdateGoal: React.FC<UpdateGoalModalProps> = ({ isOpen, onClose }) => {
               padding: 16,
               alignItems: "center",
             }}
+            onPress={handleSave}
           >
             <Text style={{ fontSize: 16, fontWeight: "600", color: "#fff" }}>
               {isLoading ? "Saving..." : "Save"}
