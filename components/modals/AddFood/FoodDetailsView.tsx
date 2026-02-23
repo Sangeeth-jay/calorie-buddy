@@ -50,7 +50,7 @@ const FoodDetailsView: React.FC<Props> = ({food, servingsText, onServingsChange,
               value={servingSizeText}
               onChangeText={onServingSizeChange}
               placeholderTextColor="#9ca3af"
-              className="text-base text-right"
+              className="text-base text-left"
               keyboardType="decimal-pad"
             />
             <Text>{food.unit}</Text>
