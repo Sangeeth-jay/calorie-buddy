@@ -4,11 +4,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useSetup } from "@/src/context/SetupContext";
 import { calculateGoalPlan, GoalType } from "@/src/utils/goalPlan";
-import { supabase } from "@/src/lib/supabase";
 
 import DonutChart from "../../components/DonutChart";
 import NextFillBtn from "../../components/NextFillBtn";
 import { useRouter } from "expo-router";
+import { insertUserGoal } from "@/src/services/goalService";
+import { completeProfileSetup } from "@/src/services/user.service";
 
 const CaloriePlan = () => {
   const { setupData } = useSetup();
@@ -29,9 +30,9 @@ const CaloriePlan = () => {
     protein: Math.round(((plan.protein_g * 4) / plan.calorieTarget) * 100),
   };
 
-  function todayISODate() {
-    return new Date().toISOString().slice(0, 10);
-  }
+  // function todayISODate() {
+  //   return new Date().toISOString().slice(0, 10);
+  // }
 
   //handle confirm
   const handleConfirm = async () => {
@@ -40,34 +41,11 @@ const CaloriePlan = () => {
     try {
       setLoading(true);
 
-      //get user
-      const { data: userData, error: userErr } = await supabase.auth.getUser();
-      if (userErr || !userData.user)
-        throw userErr ?? new Error("User not found");
-
-      const userId = userData.user.id;
       //update profile with goal
-      const { error: profileErr } = await supabase
-        .from("profiles")
-        .update({
-          current_goal: setupData.goalType,
-          has_completed_setup: true,
-        })
-        .eq("id", userId);
-
-      if (profileErr) throw profileErr;
+      await completeProfileSetup(setupData.goalType as GoalType);
 
       //insert calorie plan into daily_goals
-      const { error: goalErr } = await supabase.from("daily_goals").insert({
-        user_id: userId,
-        effective_from: todayISODate(),
-        calorie_target: plan.calorieTarget,
-        protein_target_g: plan.protein_g,
-        carbs_target_g: plan.carbs_g,
-        fat_target_g: plan.fat_g,
-      });
-
-      if (goalErr) throw goalErr;
+      await insertUserGoal(plan);
 
     } catch (err) {
       console.error("Error saving calorie plan:", err);

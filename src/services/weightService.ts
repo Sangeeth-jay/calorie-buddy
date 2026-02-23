@@ -41,3 +41,24 @@ export async function getWeightProgress(startDate: Date, endDate: Date) {
 
     return data ?? [];
 }
+
+//retrive latest weight
+export async function getLatestWeight() {
+    const { data:auth, error:authErr } = await supabase.auth.getUser();
+    if (authErr) throw authErr;
+    const user = auth.user;
+
+    if (!user) throw new Error("No user");
+
+    const {data, error} = await supabase
+        .from("weight_progress")
+        .select("logged_on, weight_kg")
+        .eq("user_id", user.id)
+        .order("logged_on", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (error) throw error;
+
+    return data;
+}
