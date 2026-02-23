@@ -5,6 +5,7 @@ import {
   Linking,
   Pressable,
   ScrollView,
+  Switch,
   Text,
   View,
 } from "react-native";
@@ -21,6 +22,7 @@ import UpdateGoal from "@/components/modals/UpdateGoal/UpdateGoal";
 import { getLatestWeight } from "@/src/services/weightService";
 
 import Star from "@/assets/icons/icons8-star-100.png";
+import { cancelAllNotifications, requestNotificationPermission, scheduleAllNotifications } from "@/src/utils/notificationService";
 
 const goalType: Record<string, string> = {
   lose_weight: "Lose weight",
@@ -59,6 +61,7 @@ const Profile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [currentWeight, setCurrentWeight] = useState(0);
+  const [isEnabled, setIsEnabled] = useState(false);
 
   // -------------------------
   // handlers
@@ -96,6 +99,16 @@ const Profile = () => {
 
   const handleGoalOnClose = () => {
     setIsGoalModalOpen(false);
+  };
+
+  const handleNotificationSwitch = async (val: boolean) => {
+    setIsEnabled(val);
+    if(val){
+      const granted = await requestNotificationPermission();
+      if(granted) await scheduleAllNotifications();
+    } else {
+      await cancelAllNotifications();
+    }
   };
 
   // -------------------------
@@ -314,9 +327,12 @@ const Profile = () => {
                     </Text>
                   </View>
                   {/* Toggle Switch - functional version coming next */}
-                  <View className="w-14 h-8 bg-green-500 rounded-full items-end justify-center px-1">
-                    <View className="w-6 h-6 bg-white rounded-full" />
-                  </View>
+                  <Switch
+                    value={isEnabled}
+                    onValueChange={handleNotificationSwitch}
+                    trackColor={{ false: "#d1d5db", true: "#22c55e" }}
+                    thumbColor="#ffffff"
+                  />
                 </View>
               </View>
 
