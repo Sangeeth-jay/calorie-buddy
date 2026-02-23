@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
 import {
   Image,
   Linking,
@@ -19,6 +19,8 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import AddWeightModal from "@/components/modals/AddWeight/AddWeightModal";
 import UpdateGoal from "@/components/modals/UpdateGoal/UpdateGoal";
 import { getLatestWeight } from "@/src/services/weightService";
+
+import Star from "@/assets/icons/icons8-star-100.png";
 
 const goalType: Record<string, string> = {
   lose_weight: "Lose weight",
@@ -100,28 +102,29 @@ const Profile = () => {
   // Effects
   // -------------------------
 
-  // Get user bundle
-  useEffect(() => {
-    let alive = true;
+  useFocusEffect(
+    useCallback(() => {
+      let alive = true;
 
-    (async () => {
-      try {
-        const res = await getUserBundle();
-        const cWeight = await getLatestWeight();
-        if(!cWeight) return
-        setCurrentWeight(cWeight.weight_kg as any);
-        if (alive && res) setBundle(res);
-      } catch (error) {
-        console.log("Profile load error: ", error);
-      } finally {
-        if (alive) setLoading(false);
-      }
-    })();
+      (async () => {
+        try {
+          const res = await getUserBundle();
+          const cWeight = await getLatestWeight();
+          if (!cWeight) return;
+          setCurrentWeight(cWeight.weight_kg as any);
+          if (alive && res) setBundle(res);
+        } catch (error) {
+          console.log("Profile load error: ", error);
+        } finally {
+          if (alive) setLoading(false);
+        }
+      })();
 
-    return () => {
-      alive = false;
-    };
-  }, []);
+      return () => {
+        alive = false;
+      };
+    }, []),
+  );
 
   return (
     <GestureHandlerRootView>
@@ -130,26 +133,29 @@ const Profile = () => {
           <ScrollView className="w-full " showsVerticalScrollIndicator={false}>
             <View className="w-full px-6 pt-6 ">
               {/* User Profile */}
-              <View className="w-full bg-white rounded-2xl flex-row items-center gap-4 p-4 mb-6 ">
-                <View className="w-20 h-20 rounded-full bg-purple-200 items-center justify-center border-4 border-purple-600">
-                  <Image
-                    resizeMode="contain"
-                    source={
-                      avatarSource[
-                        bundle?.profile.gender as keyof typeof avatarSource
-                      ]
-                    }
-                    className="w-16 h-20 rounded-full"
-                  />
+              <View className="w-full bg-white rounded-2xl flex-row items-center justify-between p-4 mb-6 ">
+                <View className="flex-row items-center gap-4">
+                  <View className="w-20 h-20 rounded-full bg-purple-200 items-center justify-center border-4 border-purple-600">
+                    <Image
+                      resizeMode="contain"
+                      source={
+                        avatarSource[
+                          bundle?.profile.gender as keyof typeof avatarSource
+                        ]
+                      }
+                      className="w-16 h-20 rounded-full"
+                    />
+                  </View>
+                  <View className="">
+                    <Text className="text-2xl font-semibold text-gray-800">
+                      {loading ? "Loading..." : bundle?.profile.user_name}
+                    </Text>
+                    <Text className="text-base text-slate-400">
+                      {loading ? "Loading..." : bundle?.user.email}
+                    </Text>
+                  </View>
                 </View>
-                <View className="">
-                  <Text className="text-2xl font-semibold text-gray-800">
-                    {loading ? "Loading..." : bundle?.profile.user_name}
-                  </Text>
-                  <Text className="text-base text-slate-400">
-                    {loading ? "Loading..." : bundle?.user.email}
-                  </Text>
-                </View>
+                <Image className="w-10 h-10" source={Star} />
               </View>
 
               {/* Nutrition & Goals */}
@@ -277,7 +283,9 @@ const Profile = () => {
                     />
                     <View className="">
                       <Text className="text-lg font-semibold text-gray-800">
-                        {loading ? "Loading..." : currentWeight + "kg (current weight)"} 
+                        {loading
+                          ? "Loading..."
+                          : currentWeight + "kg (current weight)"}
                       </Text>
                       <Text className="text-sm text-slate-400">
                         {loading
@@ -364,7 +372,11 @@ const Profile = () => {
         </SafeAreaView>
 
         <AddWeightModal isOpen={isModalOpen} onClose={handleOnClose} />
-        <UpdateGoal isOpen={isGoalModalOpen} onClose={handleGoalOnClose} weight={currentWeight}/>
+        <UpdateGoal
+          isOpen={isGoalModalOpen}
+          onClose={handleGoalOnClose}
+          weight={currentWeight}
+        />
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
