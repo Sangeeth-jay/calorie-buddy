@@ -12,6 +12,7 @@ import { GoalType } from "@/src/utils/goalPlan";
 interface UpdateGoalModalProps {
   isOpen: boolean;
   onClose: () => void;
+  weight: number
 }
 
 const goals = [
@@ -23,7 +24,7 @@ const goals = [
   { id: "gain_weight", emoji: "🎈", label: "Gain weight" },
 ];
 
-const UpdateGoal: React.FC<UpdateGoalModalProps> = ({ isOpen, onClose }) => {
+const UpdateGoal: React.FC<UpdateGoalModalProps> = ({ isOpen, onClose, weight }) => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -93,7 +94,7 @@ const UpdateGoal: React.FC<UpdateGoalModalProps> = ({ isOpen, onClose }) => {
             Update Goal
           </Text>
           <Text className="text-gray-500 ">
-            Your current weight is : 67.8 kg
+            Your current weight is : {weight} kg
           </Text>
         </View>
         <View className="flex-1">

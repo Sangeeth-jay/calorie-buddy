@@ -18,6 +18,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import AddWeightModal from "@/components/modals/AddWeight/AddWeightModal";
 import UpdateGoal from "@/components/modals/UpdateGoal/UpdateGoal";
+import { getLatestWeight } from "@/src/services/weightService";
 
 const goalType: Record<string, string> = {
   lose_weight: "Lose weight",
@@ -55,6 +56,7 @@ const Profile = () => {
   } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [currentWeight, setCurrentWeight] = useState(0);
 
   // -------------------------
   // handlers
@@ -105,6 +107,9 @@ const Profile = () => {
     (async () => {
       try {
         const res = await getUserBundle();
+        const cWeight = await getLatestWeight();
+        if(!cWeight) return
+        setCurrentWeight(cWeight.weight_kg as any);
         if (alive && res) setBundle(res);
       } catch (error) {
         console.log("Profile load error: ", error);
@@ -272,7 +277,7 @@ const Profile = () => {
                     />
                     <View className="">
                       <Text className="text-lg font-semibold text-gray-800">
-                        69 kg (current weight)
+                        {loading ? "Loading..." : currentWeight + "kg (current weight)"} 
                       </Text>
                       <Text className="text-sm text-slate-400">
                         {loading
@@ -359,7 +364,7 @@ const Profile = () => {
         </SafeAreaView>
 
         <AddWeightModal isOpen={isModalOpen} onClose={handleOnClose} />
-        <UpdateGoal isOpen={isGoalModalOpen} onClose={handleGoalOnClose} />
+        <UpdateGoal isOpen={isGoalModalOpen} onClose={handleGoalOnClose} weight={currentWeight}/>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
