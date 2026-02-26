@@ -135,10 +135,6 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
       const { error: insErr } = await createMealLog(payload);
 
       if (insErr) throw insErr;
-      Toast.show({
-        type: "success",
-        text1: "Food logged!",
-      });
       setMode("search");
       setSelectedFood(null);
       setServingsText("1");

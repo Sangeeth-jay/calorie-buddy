@@ -18,6 +18,7 @@ import {
 import { groupMealLogs } from "@/src/services/mealGroup";
 import { getHomeSummary } from "@/src/services/mealSummary";
 import Loading from "@/components/animations/Loading";
+import Toast from "react-native-toast-message";
 
 type MealType = "Breakfast" | "Lunch" | "Dinner";
 
@@ -193,6 +194,10 @@ const Diet = () => {
           isOpen={isFoodModalOpen}
           mealType={selectedMeal}
           onClose={() => {
+            Toast.show({
+              type: "success",
+              text1: "Meal logged successfully",
+            });
             setIsFoodModalOpen(false);
             mealLogsFetching();
           }}
