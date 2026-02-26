@@ -27,7 +27,7 @@ export function calculateGoalPlan(input: GoalPlanInput): GoalPlanResult {
         calorieTarget = input.tdee - 750;
         if (calorieTarget < 1500) calorieTarget = 1500;
     } else if (input.goalType === "gain_muscle") {
-        calorieTarget = input.tdee;
+        calorieTarget = input.tdee + 200;
     } else if (input.goalType === "gain_weight") {
         calorieTarget = input.tdee + 500;
     }
@@ -66,7 +66,5 @@ export function calculateGoalPlan(input: GoalPlanInput): GoalPlanResult {
         protein_g: Math.round(protein_g),
         carbs_g: Math.round(carbs_g),
         fat_g: Math.round(fat_g),
-
-        
     };
 }

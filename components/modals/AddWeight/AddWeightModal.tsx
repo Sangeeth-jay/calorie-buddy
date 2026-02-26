@@ -37,7 +37,7 @@ const AddWeightModal: React.FC<AddWeightModalProps> = ({ isOpen, onClose }) => {
       await addWeight(weightinKg);
       handleOnClose();
     } catch (error) {
-      console.log("Add weight error : ", error);
+      throw error;
     } finally {
       setIsLoading(false);
     }

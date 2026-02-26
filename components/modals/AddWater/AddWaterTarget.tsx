@@ -21,7 +21,7 @@ const AddWaterTarget: React.FC<Props> = ({ onSaved }) => {
       await updateWaterTargetInLatestRow(ml);
       onSaved(ml); // switch to consume screen
     } catch (e) {
-      console.log("Save water target error:", e);
+      throw e;
     } finally {
       setSaving(false);
     }

@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { supabase } from "@/src/lib/supabase";
 
 import NextFillBtn from "../../components/NextFillBtn";
 import SetUpHeader from "../../components/SetUpHeader";
 import { useSetup } from "../../src/context/SetupContext";
+import { createProfile } from "@/src/services/user.service";
 
 const activeLvl = [
   {
@@ -38,15 +38,21 @@ const activeLvl = [
 
 const Active = () => {
   const { setupData, updateSetupData } = useSetup();
+  const router = useRouter();
+
+  // -------------------------
+  // States
+  // -------------------------
   const [selectedActive, setSelectedActive] = useState<number | null>(
     setupData.activeLvl ?? null,
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // -------------------------
+  // Handlers
+  // -------------------------
   const canSubmit = !!selectedActive && !loading;
-
-  const router = useRouter();
 
   const handleFinish = async () => {
     if (!selectedActive) {
@@ -57,12 +63,6 @@ const Active = () => {
     setLoading(true);
 
     try {
-      const { data: userData, error: userError } =
-        await supabase.auth.getUser();
-      if (userError || !userData.user) throw new Error("No user found");
-
-      const userId = userData.user.id;
-
       // Prepare the date of birth in the required format
       const { year, month, day } = setupData.bdate;
       const yyyy = String(year);
@@ -71,19 +71,14 @@ const Active = () => {
       const dob = `${yyyy}-${mm}-${dd}`;
 
       // Update the user's profile with all the collected data
-      const {error} = await supabase.from("profiles")
-        .insert({
-          id: userId,
-          user_name: setupData.name,
-          gender: setupData.gender,
-          date_of_birth: dob,
-          height_cm: setupData.height,
-          starting_weight_kg: setupData.weight,
-          active_level: selectedActive,
-        })
-        .eq("id", userId);
-
-        if (error) throw error;
+      await createProfile({
+        name: setupData.name,
+        gender: setupData.gender,
+        dob,
+        height: setupData.height,
+        weight: setupData.weight,
+        activeLevel: selectedActive,
+      });
 
       router.replace("/(after-setup-screens)/health");
     } catch (e: any) {
@@ -106,7 +101,10 @@ const Active = () => {
         {activeLvl.map((item, index) => (
           <Pressable
             key={item.id}
-            onPress={() => {setSelectedActive(item.id); updateSetupData("activeLvl", item.id);}}
+            onPress={() => {
+              setSelectedActive(item.id);
+              updateSetupData("activeLvl", item.id);
+            }}
             className={`w-10/12 my-2 bg-gray-100 rounded-2xl ${selectedActive === item.id ? "border border-blue-500" : ""}`}
           >
             <View className="w-full p-3 flex flex-col items-center justify-between">

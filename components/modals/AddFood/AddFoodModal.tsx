@@ -6,25 +6,22 @@ import {
   BottomSheetBackdrop,
 } from "@gorhom/bottom-sheet";
 
-import { supabase } from "@/src/lib/supabase";
-
 import { createMealLog } from "@/src/services/mealLogs";
 import { useFoodSearch } from "@/src/hooks/useFoodSearch";
-import { scaleFoodTotals} from "@/src/utils/nutritionMath";
+import { scaleFoodTotals } from "@/src/utils/nutritionMath";
 import FoodSearchView from "./FoodSearchView";
 import FoodDetailsView from "./FoodDetailsView";
+import { getAuthUser } from "@/src/services/user.service";
 interface AddFoodModalProps {
   isOpen: boolean;
   onClose: () => void;
   mealType: "Breakfast" | "Lunch" | "Dinner";
-  onSave?: (data: any) => void;
 }
 
 const AddFoodModal: React.FC<AddFoodModalProps> = ({
   isOpen,
   onClose,
   mealType,
-  
 }) => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -111,13 +108,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
 
     try {
       setSaving(true);
-
-      const {
-        data: { user },
-        error: userErr,
-      } = await supabase.auth.getUser();
-      if (userErr) throw userErr;
-      if (!user) throw new Error("User not found");
+      const user = await getAuthUser();
 
       //snapshots of macros
       const calories = Number(totalCalories) || 0;
@@ -148,7 +139,7 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
       setSelectedFood(null);
       setServingsText("1");
     } catch (error) {
-      console.log("Meal log insert error:", error);
+      throw error;
     } finally {
       setSaving(false);
     }

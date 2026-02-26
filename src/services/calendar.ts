@@ -1,11 +1,13 @@
 import { supabase } from "../lib/supabase";
+import { getAuthUser } from "./user.service";
 
 export async function getWeekMealLogs(startDate: string, endDate: string) {
   const startTimestamp = `${startDate}T00:00:00`;
   const endTimestamp = `${endDate}T23:59:59`;
 
-  const user = await supabase.auth.getUser();
-  const userId = user.data.user?.id;
+  const user = await getAuthUser();
+  if (!user) throw new Error("No user");
+  const userId = user.id;
 
   // Check if user is logged in
   if (!userId) return [];

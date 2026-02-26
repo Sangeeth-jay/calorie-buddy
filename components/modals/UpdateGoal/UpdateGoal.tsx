@@ -12,7 +12,7 @@ import { GoalType } from "@/src/utils/goalPlan";
 interface UpdateGoalModalProps {
   isOpen: boolean;
   onClose: () => void;
-  weight: number
+  weight: number;
 }
 
 const goals = [
@@ -24,11 +24,14 @@ const goals = [
   { id: "gain_weight", emoji: "🎈", label: "Gain weight" },
 ];
 
-const UpdateGoal: React.FC<UpdateGoalModalProps> = ({ isOpen, onClose, weight }) => {
+const UpdateGoal: React.FC<UpdateGoalModalProps> = ({
+  isOpen,
+  onClose,
+  weight,
+}) => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
 
   useEffect(() => {
     if (isOpen) {
@@ -38,21 +41,19 @@ const UpdateGoal: React.FC<UpdateGoalModalProps> = ({ isOpen, onClose, weight })
     }
   }, [isOpen]);
 
-
   const handleSave = async () => {
-    if(!selectedGoal) return;
+    if (!selectedGoal) return;
 
     setIsLoading(true);
     try {
       await updateUserGoal(selectedGoal as GoalType);
       onClose();
-    } catch(error) {
-      console.log("update goal error : ", error);
-    } finally{
+    } catch (error) {
+      throw error;
+    } finally {
       setIsLoading(false);
     }
-  }
-
+  };
 
   const handleSheetChanges = useCallback(
     (index: number) => {
@@ -107,7 +108,6 @@ const UpdateGoal: React.FC<UpdateGoalModalProps> = ({ isOpen, onClose, weight })
                 isSelected={selectedGoal === goal.id}
                 onPress={() => {
                   setSelectedGoal(goal.id);
-                  //   updateSetupData("goalType", goal.id);
                 }}
               />
             ))}

@@ -16,14 +16,14 @@ export function useHomeHeaderData() {
         const user = await getAuthUser();
         if (!user) return;
 
-        const profile = await getProfile(user.id);
+        const profile = await getProfile();
 
         if (!alive) return;
 
         setUserName(profile?.user_name ?? "John Doe");
         setGender((profile?.gender as Gender) ?? "male");
       } catch (e) {
-        console.log("useHomeHeaderData error:", e);
+        throw e;
       } finally {
         if (alive) setLoading(false);
       }

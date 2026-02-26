@@ -1,13 +1,12 @@
 import { supabase } from "../lib/supabase";
 import { formatToLocalDateStr } from "../utils/dateRangeHelpers";
+import { getAuthUser } from "./user.service";
 
 
 //add weight
 export async function addWeight(weightinKg: number) {
 
-    const { data, error } = await supabase.auth.getUser();
-    if (error) throw error;
-    const user = data.user;
+    const user = await getAuthUser();
 
     if (!user) throw new Error("No user");
 
@@ -23,9 +22,8 @@ export async function addWeight(weightinKg: number) {
 
 //retrive weight history
 export async function getWeightProgress(startDate: Date, endDate: Date) {
-    const { data:auth, error:authErr } = await supabase.auth.getUser();
-    if (authErr) throw authErr;
-    const user = auth.user;
+
+    const user = await getAuthUser();
 
     if (!user) throw new Error("No user");
 
@@ -44,9 +42,8 @@ export async function getWeightProgress(startDate: Date, endDate: Date) {
 
 //retrive latest weight
 export async function getLatestWeight() {
-    const { data:auth, error:authErr } = await supabase.auth.getUser();
-    if (authErr) throw authErr;
-    const user = auth.user;
+
+    const user = await getAuthUser();
 
     if (!user) throw new Error("No user");
 

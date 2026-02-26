@@ -2,14 +2,12 @@ import { supabase } from "../lib/supabase";
 import { formatToLocalDateStr } from "../utils/dateRangeHelpers";
 import { calculateGoalPlan, GoalPlanResult, GoalType } from "../utils/goalPlan";
 import { calculateHealthMetrics } from "../utils/healthCalculations";
-import { getProfile } from "./user.service";
+import { getAuthUser, getProfile } from "./user.service";
 import { getLatestWeight } from "./weightService";
 
 
 export async function insertUserGoal(plan: GoalPlanResult) {
-    const { data: auth, error: authErr } = await supabase.auth.getUser();
-    if (authErr) throw authErr;
-    const user = auth.user;
+    const user = await getAuthUser();
     if (!user) throw new Error("No User");
 
     const { error } = await supabase
@@ -22,17 +20,15 @@ export async function insertUserGoal(plan: GoalPlanResult) {
             carbs_target_g: plan.carbs_g,
             fat_target_g: plan.fat_g,
         })
-    if(error) throw error;
+    if (error) throw error;
 }
 
 
 export async function updateUserGoal(newGoal: GoalType) {
-    const { data: auth, error: authErr } = await supabase.auth.getUser();
-    if (authErr) throw authErr;
-    const user = auth.user;
+    const user = await getAuthUser();
     if (!user) throw new Error("No User");
 
-    const profile = await getProfile(user.id);
+    const profile = await getProfile();
     if (!profile) throw new Error("Profile not found");
     const latestWeight = await getLatestWeight();
 

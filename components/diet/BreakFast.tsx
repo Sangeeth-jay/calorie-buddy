@@ -27,7 +27,7 @@ const BreakFast: React.FC<Props> = ({ logs, onAddItem, onDelete, loading }) => {
                 Breakfast
               </Text>
               <Text className="text-gray-500 font-light text-sm">
-                {totalCalories} kcal{" "}
+                {totalCalories.toFixed(2)} kcal{" "}
               </Text>
             </View>
             <View>

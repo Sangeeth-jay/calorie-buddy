@@ -26,7 +26,7 @@ const Lunch: React.FC<Props> = ({ logs, onAddItem, onDelete, loading }) => {
                 Lunch
               </Text>
               <Text className="text-gray-500 font-light text-sm">
-                {totalCalories} kcal{" "}
+                {totalCalories.toFixed(2)} kcal{" "}
               </Text>
             </View>
             <View>

@@ -1,8 +1,15 @@
 // src/services/mealSummary.ts
 import { supabase } from "@/src/lib/supabase";
 import { getDayRangeISO } from "@/src/utils/dayRange";
+import { getAuthUser } from "./user.service";
+import { formatToLocalDateStr } from "../utils/dateRangeHelpers";
 
-export async function getHomeSummary(userId: string, dayISO?: string) {
+export async function getHomeSummary( dayISO?: string) {
+
+const user = await getAuthUser();
+if (!user) throw new Error("No user");
+const userId = user.id;
+
   const { startISO, endISO } = getDayRangeISO(dayISO);
 
   // goal active by that day
@@ -61,20 +68,13 @@ export async function getHomeSummary(userId: string, dayISO?: string) {
 
 export async function getMacrosByDateRange(startDate: Date, endDate: Date) {
 
-  const { data: auth, error: authErr } = await supabase.auth.getUser();
-  if (authErr) throw authErr;
-  const user = auth.user;
+
+  const user = await getAuthUser();
   if (!user) throw new Error("No user");
 
-  const formatDate = (date: Date) => {
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  };
 
-  const startDateStr = formatDate(startDate);
-  const endDateStr = formatDate(endDate);
+  const startDateStr = formatToLocalDateStr(startDate);
+  const endDateStr = formatToLocalDateStr(endDate);
 
   const { data, error } = await supabase
     .from("meal_logs")

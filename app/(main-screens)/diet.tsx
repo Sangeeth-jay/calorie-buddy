@@ -10,7 +10,6 @@ import Dinner from "@/components/diet/Dinner";
 import Calendar from "@/components/Calendar";
 import AddFoodModal from "@/components/modals/AddFood/AddFoodModal";
 
-import { supabase } from "@/src/lib/supabase";
 import {
   deleteMealLog,
   fetchMealLogsForDay,
@@ -56,7 +55,6 @@ const Diet = () => {
   const handleSelectDayNumber = (dayNum: number, isoDate: string) => {
     setSelectedDateNumber(dayNum);
     setSelectedDayISO(isoDate);
-    // console.log(selectedDateNumber);
   };
 
   const handleAddItem = (mealType: MealType) => {
@@ -72,14 +70,11 @@ const Diet = () => {
         style: "destructive",
         onPress: async () => {
           try {
-            const user = await supabase.auth.getUser();
-            const userId = user.data.user?.id;
-            if (!userId) return;
-
-            await deleteMealLog(userId, logId);
+            setLoading(true);
+            await deleteMealLog(logId);
             mealLogsFetching();
           } catch (error) {
-            console.log("delete meal log error", error);
+            throw error;
           }
         },
       },
@@ -89,20 +84,15 @@ const Diet = () => {
   const mealLogsFetching = useCallback(async () => {
     try {
       setLoading(true);
-
-      const userRes = await supabase.auth.getUser();
-      const userId = userRes.data.user?.id;
-      if (!userId) return;
-
       const [dayLogs, daySummary] = await Promise.all([
-        fetchMealLogsForDay(userId, selectedDayISO),
-        getHomeSummary(userId, selectedDayISO),
+        fetchMealLogsForDay(selectedDayISO),
+        getHomeSummary(selectedDayISO),
       ]);
 
       setLogs(dayLogs);
       setSummary(daySummary);
     } catch (e) {
-      console.log("Diet load error:", e);
+      throw e;
     } finally {
       setLoading(false);
     }

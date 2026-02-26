@@ -1,18 +1,18 @@
-import { View, Text, Alert, Pressable } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { signInWithGoogle } from "@/src/services/auth/googleOAuth";
 import React, { useState } from "react";
-import { signInWithGoogle } from "@/src/lib/auth/googleOAuth";
+import { Alert, Pressable, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { EnvelopeIcon } from "phosphor-react-native";
+import AuthBtn from "../../components/AuthBtn";
 import CustomInput from "../../components/CustomInput";
 import PasswordInput from "../../components/PasswordInput";
-import AuthBtn from "../../components/AuthBtn";
 
 import GoogleIcon from "../../assets/icons/socialMedia/google.svg";
 // import AppleIcon from "../../assets/icons/socialMedia/apple.svg";
-import FacebookIcon from "../../assets/icons/socialMedia/facebook.svg";
+import { signInWithEmail } from "@/src/services/auth/authService";
 import { useRouter } from "expo-router";
-import { supabase } from "@/src/lib/supabase";
+import FacebookIcon from "../../assets/icons/socialMedia/facebook.svg";
 
 const Login = () => {
   const router = useRouter();
@@ -20,20 +20,13 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const onLogin = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      setError(error.message);
-      console.log("login error : ", error);
-      return;
+  const onLogin = async () => {
+    try {
+      await signInWithEmail(email, password);
+      router.replace("/");
+    } catch (e: any) {
+      setError(e.message);
     }
-
-    // console.log("Succes : ", data.session);
-    router.replace("/");
   };
 
   //SSO-google
@@ -124,13 +117,7 @@ const Login = () => {
 
       {/* login btn */}
       <View className="w-full px-[32px]">
-        <AuthBtn
-          title="Login"
-          onPress={() => {
-            onLogin(email, password);
-          }}
-          loading={false}
-        />
+        <AuthBtn title="Login" onPress={onLogin} loading={false} />
       </View>
     </SafeAreaView>
   );

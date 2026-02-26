@@ -10,7 +10,6 @@ import MealSummary from "@/components/home/MealSummary";
 import { useHomeHeaderData } from "@/src/hooks/useHomeHeaderData";
 
 import { getHomeSummary } from "@/src/services/mealSummary";
-import { supabase } from "@/src/lib/supabase";
 import AddWaterModal from "@/components/modals/AddWater/AddWaterModal";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -69,7 +68,6 @@ const Home = () => {
   const handleSelectDayNumber = (dayNum: number, isoDate: string) => {
     setSelectedDateNumber(dayNum);
     setSelectedDayISO(isoDate);
-    // console.log(selectedDateNumber);
   };
 
   const handleOnclose = async () => {
@@ -81,8 +79,8 @@ const Home = () => {
       setDrinked(intake);
       if (target) setWaterGoal(target);
     } catch (e) {
-      console.log("refreshWater error:", e);
-    } 
+      throw e;
+    }
     setIsModalOpen(false);
   };
   // -------------------------
@@ -96,11 +94,7 @@ const Home = () => {
         try {
           setLoading(true);
 
-          const { data } = await supabase.auth.getUser();
-          const userId = data.user?.id;
-          if (!userId) return;
-
-          const daySummary = await getHomeSummary(userId, selectedDayISO);
+          const daySummary = await getHomeSummary(selectedDayISO);
 
           if (!alive) return;
 
@@ -113,7 +107,7 @@ const Home = () => {
           setDrinked(intake);
           if (target) setWaterGoal(target);
         } catch (error) {
-          console.log("Home screen:", error);
+          throw error;
         } finally {
           if (alive) {
             setLoading(false);
@@ -145,7 +139,7 @@ const Home = () => {
 
               {/* pass summary values to card */}
               <CaloriesCard
-                selectedDate={13}
+                selectedDate={selectedDateNumber}
                 goalCalories={goalCal}
                 consumedCalories={consumedCal}
                 goalProtein={goalProtein}

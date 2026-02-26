@@ -24,7 +24,7 @@ const AddConsumed: React.FC<Props> = ({ waterTarget, onClose }) => {
       await addWaterIntake(ml);
       onClose();
     } catch (e) {
-      console.log("Add water intake error:", e);
+      throw e;
     } finally {
       setSaving(false);
     }

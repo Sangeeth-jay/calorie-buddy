@@ -33,6 +33,9 @@ type MacroDataPoint = {
   fat: number;
 };
 
+  const PERIODS = ["Week", "Month"];
+
+
 const Progress = () => {
   // Get screen width
   const { width: screenWidth } = Dimensions.get("window");
@@ -44,9 +47,8 @@ const Progress = () => {
 
   const [loading, setLoading] = useState(false);
   // Period management
-  const periods = ["Week", "Month"];
   const [selectedPeriodIndex, setSelectedPeriodIndex] = useState(0);
-  const selectedPeriod = periods[selectedPeriodIndex];
+  const selectedPeriod = PERIODS[selectedPeriodIndex];
   //weight modal state
   const [isWeightModalOpen, setIsWeightModalOpen] = useState(false);
   const [hydrationData, setHydrationData] = useState<ChartDataPoint[]>([]);
@@ -92,7 +94,7 @@ const Progress = () => {
 
       setMacroData(transformed);
     } catch (error) {
-      console.log("Macros fetching error : ", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -125,12 +127,9 @@ const Progress = () => {
               : formatDateLabel(day),
         });
       }
-
-      setLoading(false);
-
       setHydrationData(transformed);
     } catch (error) {
-      console.log("Hydration data fetching error:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -164,12 +163,9 @@ const Progress = () => {
           });
         }
       }
-
-      setLoading(false);
-
       setActualWeightData(transformed);
     } catch (error) {
-      console.log("Weight data fetching error:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -178,13 +174,13 @@ const Progress = () => {
   // Navigate periods
   const goToPreviousPeriod = () => {
     setSelectedPeriodIndex((prev) =>
-      prev === 0 ? periods.length - 1 : prev - 1,
+      prev === 0 ? PERIODS.length - 1 : prev - 1,
     );
   };
 
   const goToNextPeriod = () => {
     setSelectedPeriodIndex((prev) =>
-      prev === periods.length - 1 ? 0 : prev + 1,
+      prev === PERIODS.length - 1 ? 0 : prev + 1,
     );
   };
 

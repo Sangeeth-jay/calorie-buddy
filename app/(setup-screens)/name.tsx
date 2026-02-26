@@ -5,7 +5,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import NextFillBtn from "../../components/NextFillBtn";
 import SetUpHeader from "../../components/SetUpHeader";
 import { useSetup } from "../../src/context/SetupContext";
-import LogoutBtn from "@/components/LogoutBtn";
 
 const Name = () => {
   const { setupData, updateSetupData } = useSetup();
@@ -31,7 +30,6 @@ const Name = () => {
           onChangeText={(text) => setName(text)}
         />
       </View>
-      <LogoutBtn/>
       <View className="w-full items-center">
         <NextFillBtn disabled={!name} title="Next" onPress={handleNext} />
       </View>

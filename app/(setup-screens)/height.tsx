@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-    Dimensions,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSetup } from "../../src/context/SetupContext";
@@ -19,23 +19,51 @@ const MIN_HEIGHT = 100;
 const MAX_HEIGHT = 220;
 const TICK_SPACING = 10;
 
+//Genrate array for heights
+const generateHeights = () => {
+  const heights = [];
+  for (let i = MIN_HEIGHT; i <= MAX_HEIGHT; i++) {
+    heights.push(i);
+  }
+  return heights;
+};
+
 export default function Height() {
   const { setupData, updateSetupData } = useSetup();
 
+  // -------------------------
+  // Refs
+  // -------------------------
+  const scrollViewRef = useRef<ScrollView | null>(null);
+
+  // -------------------------
+  // States
+  // -------------------------
   const [units, setUnits] = useState(setupData.heightUnit);
   const [heightInCm, setHeightInCm] = useState(setupData.height);
 
-  const scrollViewRef = useRef<ScrollView | null>(null);
+  // -------------------------
+  // Effects
+  // -------------------------
+  useEffect(() => {
+    setTimeout(() => {
+      if (scrollViewRef.current) {
+        const initialPercentage =
+          (heightInCm - MIN_HEIGHT) / (MAX_HEIGHT - MIN_HEIGHT);
+        const initialScroll = initialPercentage * (RULER_WIDTH - SCREEN_WIDTH);
 
-  //Genrate array for heights
-  const generateHeights = () => {
-    const heights = [];
-    for (let i = MIN_HEIGHT; i <= MAX_HEIGHT; i++) {
-      heights.push(i);
-    }
-    return heights;
-  };
+        scrollViewRef.current.scrollTo({
+          x: initialScroll,
+          animated: false,
+        });
+      }
+    }, 100);
+    //eslint-disable-next-line
+  }, []);
 
+  // -------------------------
+  // Handlers
+  // -------------------------
   const heights = generateHeights();
 
   const handleScroll = (event: {
@@ -62,11 +90,6 @@ export default function Height() {
     return { feet, inches, decimal: (totalInches / 12).toFixed(1) };
   };
 
-  const feetToCm = (feet: number, inches = 0) => {
-    const totalInches = feet * 12 + inches;
-    return Math.round(totalInches * 2.54);
-  };
-
   //Display height
   const getDesiplayHeight = () => {
     if (units === "cm") {
@@ -76,21 +99,6 @@ export default function Height() {
       return `${converted.feet}' ${converted.inches}"`;
     }
   };
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (scrollViewRef.current) {
-        const initialPercentage =
-          (heightInCm - MIN_HEIGHT) / (MAX_HEIGHT - MIN_HEIGHT);
-        const initialScroll = initialPercentage * (RULER_WIDTH - SCREEN_WIDTH);
-
-        scrollViewRef.current.scrollTo({
-          x: initialScroll,
-          animated: false,
-        });
-      }
-    }, 100);
-  }, []);
 
   const handleUnitChange = (newUnit: React.SetStateAction<string>) => {
     setUnits(newUnit);
@@ -179,9 +187,6 @@ export default function Height() {
                       height: isLabeledTick ? 70 : 30,
                     }}
                   />
-                  {/* {isLabeledTick && (
-                  <Text className="text-sm text-gray-400 mt-2">{h}</Text>
-                )} */}
                 </View>
               );
             })}

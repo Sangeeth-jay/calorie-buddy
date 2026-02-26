@@ -16,7 +16,6 @@ const Gender = () => {
   const handleGenderSelect = (gender: string) => {
     setSelectedGender(gender);
     updateSetupData("gender", gender);
-    // console.log(gender);
   };
 
 
@@ -57,7 +56,7 @@ const Gender = () => {
           onPress={() => {
             handleGenderSelect("LG TV+");
           }}
-          className="px-4 py-2 border border-gray-400 rounded-full"
+          className="px-4 py-2 border opacity-5 border-gray-400 rounded-full"
         >
           <Text className="text-blue-500 text-xl">Prefer not to say</Text>
         </Pressable>

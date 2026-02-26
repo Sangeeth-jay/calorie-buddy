@@ -7,14 +7,7 @@ import { calculateHealthMetrics } from "@/src/utils/healthCalculations";
 import { useSetup } from "@/src/context/SetupContext";
 
 import NextFillBtn from "../../components/NextFillBtn";
-
-interface MetricCardProps {
-  label: string;
-  icon: any; // React Native's image source type
-  description: string;
-  children: React.ReactNode;
-  className?: string;
-}
+import MetricCard from "@/components/cards/MetricCard";
 
 const Health = () => {
   const { setupData, updateSetupData } = useSetup();
@@ -40,7 +33,7 @@ const Health = () => {
 
   //bmi value color logic
   let bmiValueColor = "bg-gray-200";
-  if (healthData.bmi.value < 18.5) bmiValueColor = "bg-blue-300" ;
+  if (healthData.bmi.value < 18.5) bmiValueColor = "bg-blue-300";
   else if (healthData.bmi.value < 25) bmiValueColor = "bg-green-300";
   else if (healthData.bmi.value < 30) bmiValueColor = "bg-yellow-300";
   else bmiValueColor = "bg-red-300";
@@ -50,6 +43,11 @@ const Health = () => {
   else if (healthData.bmi.value < 25) bmiCategoryTextColor = "text-green-900";
   else if (healthData.bmi.value < 30) bmiCategoryTextColor = "text-yellow-900";
   else bmiCategoryTextColor = "text-red-900";
+
+  const handleNext = () => {
+    updateSetupData("tdee", healthData.tdee);
+    router.push("/(after-setup-screens)/goal");
+  };
 
   return (
     <SafeAreaView className="bg-white flex-1 justify-between">
@@ -72,7 +70,9 @@ const Health = () => {
             <View className="flex-row items-center mb-2">
               <Text className="text-4xl font-bold text-gray-800">BMI : </Text>
               <View className={`${bmiValueColor} px-2 py-0.5 rounded`}>
-                <Text className={`text-xl font-semibold ${bmiCategoryTextColor}`}>
+                <Text
+                  className={`text-xl font-semibold ${bmiCategoryTextColor}`}
+                >
                   {healthData.bmi.value}
                 </Text>
               </View>
@@ -178,43 +178,9 @@ const Health = () => {
 
       {/* Continue Button */}
       <View className="px-6 py-6">
-        <NextFillBtn
-          title="Continue"
-          onPress={() => {updateSetupData("tdee", healthData.tdee);router.push("/(after-setup-screens)/goal")}}
-        />
+        <NextFillBtn title="Continue" onPress={handleNext} />
       </View>
     </SafeAreaView>
-  );
-};
-
-const MetricCard: React.FC<MetricCardProps> = ({
-  label,
-  icon,
-  description,
-  children,
-  className = "",
-}) => {
-  return (
-    <View className={`flex justify-start ${className}`}>
-      <Text className="text-sm text-gray-500 ml-1">{label}</Text>
-      <View className="bg-gray-50 rounded-2xl p-4 mb-1">
-        <View className="flex-row items-center gap-2">
-          <View className="border-r border-gray-200 pr-2">
-            <View className="w-24 h-24 bg-white p-2 items-center justify-center rounded-xl">
-              <Image
-                source={icon}
-                className="w-full h-full"
-                resizeMode="contain"
-              />
-            </View>
-          </View>
-          {children}
-        </View>
-      </View>
-      <Text className="text-xs font-light text-gray-400 ml-2">
-        {description}
-      </Text>
-    </View>
   );
 };
 

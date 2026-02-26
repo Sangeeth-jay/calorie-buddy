@@ -14,8 +14,8 @@ interface SetupData {
   weight: number;
   weightUnit: string; // 'kg' or 'lbs'
   activeLvl: number;
-  goalType?: string; 
-  tdee?: number; 
+  goalType?: string;
+  tdee?: number;
 }
 
 interface SetupContextType {
@@ -54,30 +54,16 @@ export const SetupProvider = ({ children }: { children: ReactNode }) => {
       ...prev,
       [key]: value,
     }));
-    // console.log(`Updated ${key}:`, value); // For debugging
   };
 
-  // Reset all data 
+  // Reset all data
   const resetSetupData = () => {
     setSetupData(initialSetupData);
   };
 
-  // Submit all data to API 
+  // Submit all data to API
   const submitAllData = async (finalData?: Partial<SetupData>) => {
     try {
-      // Merge setupData with finalData
-      const completeData = {
-        ...setupData,
-        ...finalData,
-      };
-
-      console.log("Submitting data:", completeData);
-
-      // API calls
-      // await fetch('api.com/users', {
-      //   body: JSON.stringify(completeData)
-      // });
-
       await new Promise((resolve) => setTimeout(resolve, 1500));
       console.log("✅ Data submitted successfully!");
     } catch (error) {

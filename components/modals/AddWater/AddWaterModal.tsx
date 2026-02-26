@@ -41,8 +41,6 @@ const AddWaterModal: React.FC<Props> = ({ isOpen, onClose }) => {
       try {
         setLoadingTarget(true);
         const latest = await getLatestDailyGoal();
-        // console.log("✅ getLatestDailyGoal result:", latest);
-
         if (!alive) return;
         setWaterTarget(latest?.water_target_ml ?? null);
       } catch (e) {

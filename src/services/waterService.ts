@@ -1,22 +1,13 @@
 // src/services/waterService.ts
 import { supabase } from "@/src/lib/supabase";
+import { getAuthUser } from "./user.service";
+import { formatToLocalDateStr } from "../utils/dateRangeHelpers";
 
-// helper: YYYY-MM-DD (local)
-const todayString = () => {
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
-};
 
 // Get latest daily goal (latest row)
 export async function getLatestDailyGoal() {
-  const { data: auth, error: authErr } = await supabase.auth.getUser();
-  if (authErr) throw authErr;
-
-  const user = auth.user;
-  if (!user) throw new Error("No user");
+  const user = await getAuthUser();
+  if (!user) throw new Error("No User");
 
   const { data, error } = await supabase
     .from("daily_goals")
@@ -36,11 +27,8 @@ export async function updateWaterTargetInLatestRow(targetMl: number) {
     throw new Error("Invalid target");
   }
 
-  const { data: auth, error: authErr } = await supabase.auth.getUser();
-  if (authErr) throw authErr;
-
-  const user = auth.user;
-  if (!user) throw new Error("No user");
+  const user = await getAuthUser();
+  if (!user) throw new Error("No User");
 
   const latest = await getLatestDailyGoal();
   if (!latest) {
@@ -63,13 +51,10 @@ export async function addWaterIntake(amountMl: number) {
     throw new Error("Invalid amount");
   }
 
-  const { data: auth, error: authErr } = await supabase.auth.getUser();
-  if (authErr) throw authErr;
+  const user = await getAuthUser();
+  if (!user) throw new Error("No User");
 
-  const user = auth.user;
-  if (!user) throw new Error("No user");
-
-  const today = todayString();
+  const today = formatToLocalDateStr(new Date());
 
   // read today's current intake (to add on top)
   const { data: row, error: readErr } = await supabase
@@ -99,11 +84,8 @@ export async function addWaterIntake(amountMl: number) {
 
 // ✅ get today's intake (auto today)
 export async function getTodayWaterIntake(selectedDayISO: string) {
-  const { data: auth, error: authErr } = await supabase.auth.getUser();
-  if (authErr) throw authErr;
-
-  const user = auth.user;
-  if (!user) throw new Error("No user");
+  const user = await getAuthUser();
+  if (!user) throw new Error("No User");
 
   const today = selectedDayISO;
 
@@ -130,31 +112,22 @@ export async function getLatestWaterTarget() {
 export async function getWaterIntakeByDateRange(startDate: Date,
   endDate: Date
 ) {
-  const {data: auth, error: authErr} = await supabase.auth.getUser();
-  if(authErr) throw authErr;
-  const user = auth.user;
-  if(!user) throw new Error("No User");
+  const user = await getAuthUser();
+  if (!user) throw new Error("No User");
 
-  const formatDate = (date: Date) => {
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth()+1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
 
-    return `${yyyy}-${mm}-${dd}`;
-  };
+  const startDateStr = formatToLocalDateStr(startDate);
+  const endDateStr = formatToLocalDateStr(endDate);
 
-  const startDateStr = formatDate(startDate);
-  const endDateStr = formatDate(endDate);
-
-  const {data, error} = await supabase
+  const { data, error } = await supabase
     .from("water_progress")
     .select("logged_on, intake_ml")
     .eq("user_id", user.id)
-    .gte("logged_on", startDateStr) 
+    .gte("logged_on", startDateStr)
     .lte("logged_on", endDateStr)
     .order("logged_on", { ascending: true });
 
-  if(error) throw error;
+  if (error) throw error;
 
   return data ?? [];
 }

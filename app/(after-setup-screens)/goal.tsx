@@ -21,6 +21,15 @@ const Goal = () => {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
   const { updateSetupData } = useSetup();
 
+  const handleGoalSelect = (id: string) => {
+    setSelectedGoal(id);
+    updateSetupData("goalType", id);
+  };
+
+  const handleNext = () => {
+    router.push("/(after-setup-screens)/calorie-plan");
+  };
+
   return (
     <SafeAreaView className="bg-white flex-1">
       <View className="flex-1 justify-between">
@@ -39,7 +48,7 @@ const Goal = () => {
                 emoji={goal.emoji}
                 label={goal.label}
                 isSelected={selectedGoal === goal.id}
-                onPress={() => {setSelectedGoal(goal.id); updateSetupData("goalType", goal.id);}}
+                onPress={() => handleGoalSelect(goal.id)}
               />
             ))}
           </View>
@@ -49,10 +58,7 @@ const Goal = () => {
         <View className="px-6 py-6">
           <NextFillBtn
             title="Continue"
-            onPress={() => {
-              // console.log("Context data:", setupData);
-              router.push("/(after-setup-screens)/calorie-plan");
-            }}
+            onPress={handleNext}
             disabled={!selectedGoal}
           />
         </View>

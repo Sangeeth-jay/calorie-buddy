@@ -13,7 +13,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { getUserBundle } from "@/src/services/user.service";
 
-import { supabase } from "@/src/lib/supabase";
 import { ArrowSquareOutIcon, CaretRightIcon } from "phosphor-react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -23,6 +22,7 @@ import { getLatestWeight } from "@/src/services/weightService";
 
 import Star from "@/assets/icons/icons8-star-100.png";
 import { cancelAllNotifications, requestNotificationPermission, scheduleAllNotifications } from "@/src/utils/notificationService";
+import { signOut } from "@/src/services/auth/authService";
 
 const goalType: Record<string, string> = {
   lose_weight: "Lose weight",
@@ -79,19 +79,18 @@ const Profile = () => {
         console.log("Can't open URL:", url);
       }
     } catch (error) {
-      console.error("Error opening URL:", error);
+      throw error;
     }
   };
 
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      console.log("logout error : ", error);
+const handleLogout = async () => {
+    try {
+        await signOut();
+        router.replace("/(auth)/login");
+    } catch (error) {
+        throw error;
     }
-
-    router.replace("/(auth)/login");
-  };
+};
 
   const handleOnClose = () => {
     setIsModalOpen(false);
@@ -127,7 +126,7 @@ const Profile = () => {
           setCurrentWeight(cWeight.weight_kg as any);
           if (alive && res) setBundle(res);
         } catch (error) {
-          console.log("Profile load error: ", error);
+          throw error;
         } finally {
           if (alive) setLoading(false);
         }
@@ -326,7 +325,6 @@ const Profile = () => {
                       Daily Tracking Reminders
                     </Text>
                   </View>
-                  {/* Toggle Switch - functional version coming next */}
                   <Switch
                     value={isEnabled}
                     onValueChange={handleNotificationSwitch}

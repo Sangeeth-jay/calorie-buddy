@@ -30,29 +30,23 @@ const CaloriePlan = () => {
     protein: Math.round(((plan.protein_g * 4) / plan.calorieTarget) * 100),
   };
 
-  // function todayISODate() {
-  //   return new Date().toISOString().slice(0, 10);
-  // }
-
+//-----------
+// Handlers
+//-----------
   //handle confirm
-  const handleConfirm = async () => {
+const handleConfirm = async () => {
     if (loading) return;
-
     try {
-      setLoading(true);
-
-      //update profile with goal
-      await completeProfileSetup(setupData.goalType as GoalType);
-
-      //insert calorie plan into daily_goals
-      await insertUserGoal(plan);
-
+        setLoading(true);
+        await completeProfileSetup(setupData.goalType as GoalType);
+        await insertUserGoal(plan);
+        router.replace("/(main-screens)/home");
     } catch (err) {
-      console.error("Error saving calorie plan:", err);
+        throw err;
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   return (
     <SafeAreaView className="bg-white flex-1">
@@ -110,10 +104,7 @@ const CaloriePlan = () => {
           <NextFillBtn
             title={loading ? "Saving..." : "Continue"}
             disabled={loading}
-            onPress={() => {
-              handleConfirm();
-              router.replace("/(main-screens)/home");
-            }}
+            onPress={handleConfirm}
           />
         </View>
       </View>

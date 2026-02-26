@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-    Dimensions,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSetup } from "../../src/context/SetupContext";
@@ -19,21 +19,51 @@ const MIN_WEIGHT = 30;
 const MAX_WEIGHT = 200;
 const TICK_SPACING = 10;
 
+//Genrate array for heights
+const generateHeights = () => {
+  const weights = [];
+  for (let i = MIN_WEIGHT; i <= MAX_WEIGHT; i++) {
+    weights.push(i);
+  }
+  return weights;
+};
+
 export default function Weight() {
   const { setupData, updateSetupData } = useSetup();
+
+  // -------------------------
+  // Refs
+  // -------------------------
+  const scrollViewRef = useRef<ScrollView | null>(null);
+
+  // -------------------------
+  // States
+  // -------------------------
   const [units, setUnits] = useState(setupData.weightUnit);
   const [weightInKg, setWeightInKg] = useState(setupData.weight);
 
-  const scrollViewRef = useRef<ScrollView | null>(null);
+  // -------------------------
+  // Effects
+  // -------------------------
+  useEffect(() => {
+    setTimeout(() => {
+      if (scrollViewRef.current) {
+        const initialPercentage =
+          (weightInKg - MIN_WEIGHT) / (MAX_WEIGHT - MIN_WEIGHT);
+        const initialScroll = initialPercentage * (RULER_WIDTH - SCREEN_WIDTH);
 
-  //Genrate array for heights
-  const generateHeights = () => {
-    const weights = [];
-    for (let i = MIN_WEIGHT; i <= MAX_WEIGHT; i++) {
-      weights.push(i);
-    }
-    return weights;
-  };
+        scrollViewRef.current.scrollTo({
+          x: initialScroll,
+          animated: false,
+        });
+      }
+    }, 100);
+    //eslint-disable-next-line
+  }, []);
+
+  // -------------------------
+  // Handlers
+  // -------------------------
 
   const weights = generateHeights();
 
@@ -58,10 +88,6 @@ export default function Weight() {
     return (kg * 2.205).toFixed(1);
   };
 
-  const lbsToKg = (lbs: number) => {
-    return (lbs / 2.205).toFixed(1);
-  };
-
   //Display height
   const getDesiplayWeight = () => {
     if (units === "kg") {
@@ -71,21 +97,6 @@ export default function Weight() {
       return converted;
     }
   };
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (scrollViewRef.current) {
-        const initialPercentage =
-          (weightInKg - MIN_WEIGHT) / (MAX_WEIGHT - MIN_WEIGHT);
-        const initialScroll = initialPercentage * (RULER_WIDTH - SCREEN_WIDTH);
-
-        scrollViewRef.current.scrollTo({
-          x: initialScroll,
-          animated: false,
-        });
-      }
-    }, 100);
-  }, []);
 
   const handleUnitChange = (newUnit: React.SetStateAction<string>) => {
     setUnits(newUnit);
@@ -174,9 +185,6 @@ export default function Weight() {
                       height: isLabeledTick ? 70 : 30,
                     }}
                   />
-                  {/* {isLabeledTick && (
-                  <Text className="text-sm text-gray-400 mt-2">{h}</Text>
-                )} */}
                 </View>
               );
             })}
