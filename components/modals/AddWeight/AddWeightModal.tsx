@@ -7,6 +7,7 @@ import {
   BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
 import { addWeight } from "@/src/services/weightService";
+import Toast from "react-native-toast-message";
 
 interface AddWeightModalProps {
   isOpen: boolean;
@@ -35,8 +36,16 @@ const AddWeightModal: React.FC<AddWeightModalProps> = ({ isOpen, onClose }) => {
     try {
       const weightinKg = parseFloat(weight);
       await addWeight(weightinKg);
+      Toast.show({
+        type: "success",
+        text1: "Weight added successfully",
+      });
       handleOnClose();
     } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error adding weight",
+      });
       throw error;
     } finally {
       setIsLoading(false);

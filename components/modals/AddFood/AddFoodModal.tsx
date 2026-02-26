@@ -12,6 +12,7 @@ import { scaleFoodTotals } from "@/src/utils/nutritionMath";
 import FoodSearchView from "./FoodSearchView";
 import FoodDetailsView from "./FoodDetailsView";
 import { getAuthUser } from "@/src/services/user.service";
+import Toast from "react-native-toast-message";
 interface AddFoodModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -134,11 +135,18 @@ const AddFoodModal: React.FC<AddFoodModalProps> = ({
       const { error: insErr } = await createMealLog(payload);
 
       if (insErr) throw insErr;
-
+      Toast.show({
+        type: "success",
+        text1: "Food logged!",
+      });
       setMode("search");
       setSelectedFood(null);
       setServingsText("1");
     } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Failed logging meal",
+      });
       throw error;
     } finally {
       setSaving(false);

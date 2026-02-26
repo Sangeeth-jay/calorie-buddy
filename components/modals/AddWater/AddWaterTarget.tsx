@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 import { updateWaterTargetInLatestRow } from "@/src/services/waterService";
+import Toast from "react-native-toast-message";
 
 type Props = {
   onSaved: (targetMl: number) => void;
@@ -19,8 +20,16 @@ const AddWaterTarget: React.FC<Props> = ({ onSaved }) => {
     try {
       setSaving(true);
       await updateWaterTargetInLatestRow(ml);
-      onSaved(ml); // switch to consume screen
+      Toast.show({
+        type: "success",
+        text1: "Water target updated successfully",
+      });
+      onSaved(ml);
     } catch (e) {
+      Toast.show({
+        type: "error",
+        text1: "Failed updating water target",
+      });
       throw e;
     } finally {
       setSaving(false);

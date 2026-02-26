@@ -8,6 +8,7 @@ import {
 import GoalCard from "@/components/cards/GoalCard";
 import { updateUserGoal } from "@/src/services/goalService";
 import { GoalType } from "@/src/utils/goalPlan";
+import Toast from "react-native-toast-message";
 
 interface UpdateGoalModalProps {
   isOpen: boolean;
@@ -47,8 +48,17 @@ const UpdateGoal: React.FC<UpdateGoalModalProps> = ({
     setIsLoading(true);
     try {
       await updateUserGoal(selectedGoal as GoalType);
+      Toast.show({
+        type: "success",
+        text1: "Goal updated",
+        text2: "Your plan has been recalculated",
+      });
       onClose();
     } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Failed updating goal",
+      });
       throw error;
     } finally {
       setIsLoading(false);

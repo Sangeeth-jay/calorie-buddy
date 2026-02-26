@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 
 import { addWaterIntake } from "@/src/services/waterService";
+import Toast from "react-native-toast-message";
 
 type Props = {
   waterTarget: number;
@@ -22,8 +23,16 @@ const AddConsumed: React.FC<Props> = ({ waterTarget, onClose }) => {
     try {
       setSaving(true);
       await addWaterIntake(ml);
+      Toast.show({
+        type: "success",
+        text1: "Water added successfully",
+      });
       onClose();
     } catch (e) {
+      Toast.show({
+        type: "error",
+        text1: "Failed adding water",
+      })
       throw e;
     } finally {
       setSaving(false);

@@ -7,6 +7,7 @@ import NextFillBtn from "../../components/NextFillBtn";
 import SetUpHeader from "../../components/SetUpHeader";
 import { useSetup } from "../../src/context/SetupContext";
 import { createProfile } from "@/src/services/user.service";
+import Toast from "react-native-toast-message";
 
 const activeLvl = [
   {
@@ -82,6 +83,10 @@ const Active = () => {
 
       router.replace("/(after-setup-screens)/health");
     } catch (e: any) {
+      Toast.show({
+        type: "error",
+        text1: "Failed saving your data",
+      });
       console.log("Submitting err:", e);
 
       setError(
